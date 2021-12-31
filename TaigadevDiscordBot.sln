@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31729.503
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaigadevDiscordBot", "TaigadevDiscordBot\TaigadevDiscordBot.csproj", "{C04FA1B4-A29F-4C67-9466-5A7DB4993CDC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaigadevDiscordBot.App", "TaigadevDiscordBot.App\TaigadevDiscordBot.App.csproj", "{63388F60-1671-472E-A061-466A1B3946C2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaigadevDiscordBot.Core", "TaigadevDiscordBot.Core\TaigadevDiscordBot.Core.csproj", "{86400ED1-04AA-4658-9A33-C1D6CAD6C492}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C04FA1B4-A29F-4C67-9466-5A7DB4993CDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C04FA1B4-A29F-4C67-9466-5A7DB4993CDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C04FA1B4-A29F-4C67-9466-5A7DB4993CDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C04FA1B4-A29F-4C67-9466-5A7DB4993CDC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63388F60-1671-472E-A061-466A1B3946C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63388F60-1671-472E-A061-466A1B3946C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63388F60-1671-472E-A061-466A1B3946C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63388F60-1671-472E-A061-466A1B3946C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86400ED1-04AA-4658-9A33-C1D6CAD6C492}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86400ED1-04AA-4658-9A33-C1D6CAD6C492}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86400ED1-04AA-4658-9A33-C1D6CAD6C492}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86400ED1-04AA-4658-9A33-C1D6CAD6C492}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C42D0E20-D335-4B87-B207-A63A83D6FE8D}
+	EndGlobalSection
+EndGlobal
