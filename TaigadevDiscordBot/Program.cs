@@ -41,8 +41,8 @@ namespace TaigadevDiscordBot
                     // future web UI
                     webBuilder.UseStartup<Startup>();
                     // startup for heroku app start
-                    webBuilder.UseKestrel(options =>
-                        options.ListenAnyIP(int.TryParse(Environment.GetEnvironmentVariable("PORT"), out var port) ? port : 5000));
+                    //webBuilder.UseKestrel(options =>
+                    //    options.ListenAnyIP(int.TryParse(Environment.GetEnvironmentVariable("PORT"), out var port) ? port : 5001));
                 })
                 .ConfigureLogging(configuration)
                 .ConfigureServices(configuration)

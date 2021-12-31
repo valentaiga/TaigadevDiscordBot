@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -27,6 +28,8 @@ namespace TaigadevDiscordBot
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                // web UI 200 ok (till no web part available)
+                app.Run(async x => await x.Response.WriteAsync("OK"));
             }
             else
             {
