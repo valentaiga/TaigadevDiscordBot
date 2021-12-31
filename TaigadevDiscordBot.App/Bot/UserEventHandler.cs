@@ -24,6 +24,7 @@ namespace TaigadevDiscordBot.App.Bot
             ICommandService commandService,
             ILogger<UserEventHandler> logger)
         {
+            // todo: add cookies collector
             _logger = logger;
             VoiceStatusUpdatedHandler += voiceActivityService.UpdateUserVoiceActivityAsync;
             NewTextMessageHandler += textActivityService.UpdateUserTextActivityAsync;
