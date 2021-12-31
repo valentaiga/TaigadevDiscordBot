@@ -3,9 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 using TaigadevDiscordBot.Extensions;
 
@@ -30,8 +28,7 @@ namespace TaigadevDiscordBot
             catch (Exception ex)
             {
                 // log error
-                var logger = _webHost.Services.GetRequiredService<ILogger<Program>>();
-                logger.LogCritical($"Unable to start. Exception: {ex}");
+                Console.WriteLine($"Unable to start. Exception: {ex}");
             }
         }
 
@@ -41,8 +38,11 @@ namespace TaigadevDiscordBot
             return Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    // startup for heroku app start
+                    // future web UI
                     webBuilder.UseStartup<Startup>();
+                    // startup for heroku app start
+                    webBuilder.UseKestrel(options =>
+                        options.ListenAnyIP(int.TryParse(Environment.GetEnvironmentVariable("PORT"), out var port) ? port : 5000));
                 })
                 .ConfigureLogging(configuration)
                 .ConfigureServices(configuration)
