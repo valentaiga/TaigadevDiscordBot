@@ -19,7 +19,6 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands
         {
             _prefix = "t!";
             _textCommands = new(textCommands.ToDictionary(x => x.Command, x => x));
-            // todo: add prefix to config and check for prefix in the beginnign of message
         }
 
         private bool IsCommandCall(SocketMessage message)

@@ -6,6 +6,7 @@
         {
             public const string AdminId = "Discord:AdminId";
             public const string Token = "Discord:Token";
+            public const string RequiredChannels = "Discord:RequiredChannels";
         }
 
         public static class Redis
