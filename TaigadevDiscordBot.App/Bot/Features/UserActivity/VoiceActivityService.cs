@@ -2,23 +2,19 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
 
-using TaigadevDiscordBot.Core.Bot.Event;
 using TaigadevDiscordBot.Core.Bot.Event.EventArgs;
-using TaigadevDiscordBot.Core.Bot.Features;
 using TaigadevDiscordBot.Core.Bot.Features.UserActivity;
+using TaigadevDiscordBot.Core.Extensions;
 
 namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
 {
     public class VoiceActivityService : IVoiceActivityService
     {
                                                 // voiceChannelId, userId / userVoiceActivity
-        private readonly ConcurrentDictionary<ulong, ConcurrentDictionary<ulong, UserVoiceActivity>> UsersActivity = new();
-
-                                    // userCacheKey / UserVoiceActivity 
-        private readonly ConcurrentDictionary<string, UserVoiceActivity> _usersActivity = new();
+        private readonly ConcurrentDictionary<ulong, ConcurrentDictionary<ulong, UserVoiceActivity>> _usersActivity = new();
+        
         // contains activities to collect
         private readonly ConcurrentQueue<UserVoiceActivity> _userActivitiesToCollect = new();
 
@@ -27,9 +23,9 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
             var dtNow = DateTime.UtcNow;
             var currentUserId = eventArgs.User.Id;
 
-            if (eventArgs.CurrentChannel is null)
+            if (eventArgs.CurrentChannel is null || eventArgs.User.IsMuted())
             {
-                ProcessLeftUser();
+                ProcessLeftOrMutedUser();
                 return ValueTask.CompletedTask;
             }
 
@@ -39,25 +35,29 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
                 return ValueTask.CompletedTask;
             }
 
-            // todo: process muted users
-
             ProcessMovedUser();
             return ValueTask.CompletedTask;
 
             ConcurrentDictionary<ulong, UserVoiceActivity> GetUsersInVoiceChannel(ulong voiceChannelId)
             {
-                if (!UsersActivity.TryGetValue(voiceChannelId, out var result))
+                if (!_usersActivity.TryGetValue(voiceChannelId, out var result))
                 {
                     result = new();
-                    UsersActivity.TryAdd(voiceChannelId, result);
+                    _usersActivity.TryAdd(voiceChannelId, result);
                 }
 
                 return result;
             }
 
-            void ProcessLeftUser()
+            void ProcessLeftOrMutedUser()
             {
                 // finish current user activity
+                var userMuted = eventArgs.User.IsMuted();
+                if (eventArgs.CurrentChannel is null && userMuted)
+                {
+                    return;
+                }
+
                 var previousChannelId = eventArgs.PreviousChannel!.Id;
                 var usersInChannel = GetUsersInVoiceChannel(previousChannelId);
                 if (usersInChannel.TryRemove(currentUserId, out var activity))
@@ -69,7 +69,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
                 {
                     // finish last person activity in channel
                     _userActivitiesToCollect.Enqueue(UpdateActivity(usersInChannel.Values.First()));
-                    UsersActivity.TryRemove(previousChannelId, out _);
+                    _usersActivity.TryRemove(previousChannelId, out _);
                 }
             }
 
@@ -116,7 +116,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
 
                     if (usersInChannel.Count < 2)
                     {
-                        UsersActivity.TryRemove(previousChannelId, out _);
+                        _usersActivity.TryRemove(previousChannelId, out _);
                     }
                 }
 
