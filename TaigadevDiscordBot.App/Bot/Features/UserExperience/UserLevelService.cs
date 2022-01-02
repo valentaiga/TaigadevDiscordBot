@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -87,12 +86,13 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserExperience
                 }
 
                 var levelRoles = await dsUser.Roles.ToAsyncEnumerable()
-                    .Where(x => _roleLevelRegex.IsMatch(x.Name)).Select(x => x.Id).ToArrayAsync();
+                    .Where(x => _roleLevelRegex.IsMatch(x.Name)).Select(x => x.Id)
+                    .Except(new[] {nextLevelRole.Id}.ToAsyncEnumerable())
+                    .ToArrayAsync();
 
-                // after migration next role is same as current
-                if (!levelRoles.Contains(nextLevelRole.Id))
+                await dsUser.AddRoleAsync(nextLevelRole.Id);
+                if (levelRoles.Length > 0)
                 {
-                    await dsUser.AddRoleAsync(nextLevelRole.Id);
                     await dsUser.RemoveRolesAsync(levelRoles);
                 }
 
