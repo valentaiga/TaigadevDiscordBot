@@ -18,7 +18,6 @@ namespace TaigadevDiscordBot
         {
             try
             {
-                // todo: change app type to service instead of web, so heroku host will not die
                 _webHost = CreateHostBuilder(args).Build();
                 await _webHost.RunAsync(TokenSource.Token);
             }

@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 
+using Discord;
 using Discord.WebSocket;
 
 namespace TaigadevDiscordBot.Core.Bot.Event
@@ -8,5 +9,6 @@ namespace TaigadevDiscordBot.Core.Bot.Event
     {
         Task OnUserVoiceStateUpdated(SocketUser user, SocketVoiceState oldVoiceState, SocketVoiceState newVoiceState);
         Task OnMessageReceived(SocketMessage message);
+        Task OnReactionAdded(Cacheable<IUserMessage, ulong> cachedMessage, Cacheable<IMessageChannel, ulong> cachedTextChannel, SocketReaction reaction);
     }
 }

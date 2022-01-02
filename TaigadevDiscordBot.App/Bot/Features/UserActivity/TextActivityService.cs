@@ -42,5 +42,14 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
 
             _channelsActivity.TryAdd(key, eventArgs.User.Id);
         }
+
+        public async ValueTask IncrementUserCookiesAsync(ulong userId, ulong guildId)
+        {
+            await _userRepository.UpdateUserAsync(userId, guildId, user =>
+            {
+                user.CookiesCollected++;
+                return Task.CompletedTask;
+            });
+        }
     }
 }

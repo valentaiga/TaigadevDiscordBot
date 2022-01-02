@@ -27,12 +27,13 @@ namespace TaigadevDiscordBot.Core.Bot.Features
 
         public int Level { get; set; }
 
-        // todo: json serialize settings for timespan (use just string instead of json structure)
+        public int CookiesCollected { get; set; }
+
         [JsonIgnore]
         public TimeSpan TotalVoiceActivity { get; set; }
 
         [JsonPropertyName("TotalVoiceActivity")]
-        public string TimeInVoiceSpentString
+        private string TimeInVoiceSpentString
         {
             get => TotalVoiceActivity.ToString();
             set => TotalVoiceActivity = TimeSpan.TryParse(value, out var result) ? result : default;

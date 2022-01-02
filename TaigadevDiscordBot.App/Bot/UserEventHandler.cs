@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
+using Discord;
 using Discord.WebSocket;
 
 using Microsoft.Extensions.Logging;
@@ -14,6 +15,7 @@ namespace TaigadevDiscordBot.App.Bot
 {
     public class UserEventHandler : IUserEventHandler
     {
+        private readonly ITextActivityService _textActivityService;
         private readonly ILogger<UserEventHandler> _logger;
 
         private event Func<VoiceStatusUpdatedEventArgs, ValueTask> VoiceStatusUpdatedHandler;
@@ -26,6 +28,7 @@ namespace TaigadevDiscordBot.App.Bot
             ILogger<UserEventHandler> logger)
         {
             // todo: add cookies collector
+            _textActivityService = textActivityService;
             _logger = logger;
             VoiceStatusUpdatedHandler += voiceActivityService.UpdateUserVoiceActivityAsync;
             NewTextMessageHandler += textActivityService.UpdateUserTextActivityAsync;
@@ -66,6 +69,19 @@ namespace TaigadevDiscordBot.App.Bot
                 {
                     _logger.LogError($"Error during message processing: {ex}");
                 }
+            }
+        }
+
+        public async Task OnReactionAdded(Cacheable<IUserMessage, ulong> cachedMessage, Cacheable<IMessageChannel, ulong> cachedTextChannel, SocketReaction reaction)
+        {
+            const string cookieEmote = @"🍪";
+            var message = await cachedMessage.GetOrDownloadAsync();
+            if (!message.Author.IsBot 
+                && message.Author.Id != reaction.UserId
+                && reaction.Emote.Name == cookieEmote)
+            {
+                var textChannel = await cachedTextChannel.GetOrDownloadAsync() as SocketTextChannel;
+                await _textActivityService.IncrementUserCookiesAsync(message.Author.Id, textChannel!.Guild.Id);
             }
         }
     }

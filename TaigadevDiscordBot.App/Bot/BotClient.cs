@@ -27,6 +27,7 @@ namespace TaigadevDiscordBot.App.Bot
             // events
             _botClient.UserVoiceStateUpdated += eventHandler.OnUserVoiceStateUpdated;
             _botClient.MessageReceived += eventHandler.OnMessageReceived;
+            _botClient.ReactionAdded += eventHandler.OnReactionAdded;
             _botClient.Connected += BotClientOnConnected;
         }
 
