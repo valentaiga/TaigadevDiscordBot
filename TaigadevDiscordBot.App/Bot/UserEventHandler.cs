@@ -2,12 +2,13 @@
 using System.Threading.Tasks;
 
 using Discord.WebSocket;
+
 using Microsoft.Extensions.Logging;
+
 using TaigadevDiscordBot.Core.Bot.Event;
 using TaigadevDiscordBot.Core.Bot.Event.EventArgs;
 using TaigadevDiscordBot.Core.Bot.Features.Commands;
 using TaigadevDiscordBot.Core.Bot.Features.UserActivity;
-using TaigadevDiscordBot.Core.Extensions;
 
 namespace TaigadevDiscordBot.App.Bot
 {
@@ -33,23 +34,18 @@ namespace TaigadevDiscordBot.App.Bot
 
         public async Task OnUserVoiceStateUpdated(SocketUser user, SocketVoiceState oldVoiceState, SocketVoiceState newVoiceState)
         {
-            if (VoiceStatusUpdatedHandler is not null && !user.IsBot)
+            if (VoiceStatusUpdatedHandler is not null && !user.IsBot && user is SocketGuildUser guildUser)
             {
-                var eventArgs = new VoiceStatusUpdatedEventArgs(user, GetGuild(), GetUserVoiceStatus());
+                var eventArgs = new VoiceStatusUpdatedEventArgs(guildUser, GetGuild(), oldVoiceState.VoiceChannel, newVoiceState.VoiceChannel);
                 try
                 {
                     await VoiceStatusUpdatedHandler(eventArgs);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError($"Error during message processing: {ex}");
+                    _logger.LogError($"Error during voice activity: {ex}");
                 }
             }
-
-            UserVoiceStatus GetUserVoiceStatus()
-                => newVoiceState.IsNull() ? UserVoiceStatus.Left
-                    : newVoiceState.IsUserMuted() ? UserVoiceStatus.Muted
-                    : UserVoiceStatus.Unmuted;
 
             SocketGuild GetGuild()
                 => oldVoiceState.VoiceChannel?.Guild ?? newVoiceState.VoiceChannel?.Guild;

@@ -9,14 +9,14 @@ namespace TaigadevDiscordBot.Core.Bot.Features.UserActivity
             UserId = userId;
             GuildId = guildId;
             Username = username;
-            LastActivityDateTime = DateTime.UtcNow;
+            VoiceEnterDateTime = DateTime.UtcNow;
             TimeInVoiceSpent = TimeSpan.Zero;
         }
-
-        public ulong UserId;
-        public ulong GuildId;
-        public string Username;
-        public DateTime LastActivityDateTime;
+        
+        public DateTime VoiceEnterDateTime;
         public TimeSpan TimeInVoiceSpent;
+        public ulong GuildId;
+        public ulong UserId;
+        public string Username;
     }
 }

@@ -2,17 +2,19 @@
 
 namespace TaigadevDiscordBot.Core.Bot.Event.EventArgs
 {
-    public struct VoiceStatusUpdatedEventArgs
+    public class VoiceStatusUpdatedEventArgs
     {
-        public VoiceStatusUpdatedEventArgs(SocketUser user, SocketGuild guild, UserVoiceStatus voiceStatus)
+        public VoiceStatusUpdatedEventArgs(SocketGuildUser user, SocketGuild guild, SocketVoiceChannel previousChannel, SocketVoiceChannel currentChannel)
         {
             User = user;
             Guild = guild;
-            VoiceStatus = voiceStatus;
+            PreviousChannel = previousChannel;
+            CurrentChannel = currentChannel;
         }
 
-        public SocketUser User;
+        public SocketGuildUser User;
         public SocketGuild Guild;
-        public UserVoiceStatus VoiceStatus;
+        public SocketVoiceChannel PreviousChannel;
+        public SocketVoiceChannel CurrentChannel;
     }
 }
