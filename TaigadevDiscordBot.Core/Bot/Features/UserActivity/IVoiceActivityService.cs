@@ -13,6 +13,8 @@ namespace TaigadevDiscordBot.Core.Bot.Features.UserActivity
 
         void AddActivity(UserVoiceActivity voiceActivity);
 
+        void FinishAllActivities();
+
         int ActivitiesToCollectCount { get; }
     }
 }

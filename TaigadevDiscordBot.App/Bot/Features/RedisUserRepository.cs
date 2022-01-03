@@ -36,7 +36,7 @@ namespace TaigadevDiscordBot.App.Bot.Features
         public async Task SaveUserAsync(User user)
         {
             await _redisRepository.SaveAsync(user);
-            _logger.LogDebug($"User '{user.Username}' with key '{user.GetCacheKey()}' updated");
+            _logger.LogDebug($"User '{user.Nickname}' with key '{user.GetCacheKey()}' updated");
         }
 
         public async Task<User> UpdateUserAsync(ulong userId, ulong guildId, Func<User, Task> updateAction)

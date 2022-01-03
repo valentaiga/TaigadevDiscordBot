@@ -57,6 +57,7 @@ namespace TaigadevDiscordBot.App.Bot
             {
                 await _botClient.LoginAsync(TokenType.Bot, _botConfiguration.Token);
                 await _botClient.StartAsync();
+                _logger.LogInformation("Bot started");
             }
             catch (Exception ex)
             {
@@ -72,7 +73,7 @@ namespace TaigadevDiscordBot.App.Bot
 
         private Task BotClientOnConnected()
         {
-            _logger.LogInformation($"Bot started");
+            _logger.LogInformation($"Bot connected");
             return Task.CompletedTask;
         }
 

@@ -88,7 +88,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
                 }
 
                 // start new current user activity
-                var activity = new UserVoiceActivity(eventArgs.User.Id, eventArgs.Guild.Id, eventArgs.User.Username, eventArgs.User.Roles);
+                var activity = new UserVoiceActivity(eventArgs.User.Id, eventArgs.Guild.Id, eventArgs.User.Nickname, eventArgs.User.Roles);
                 usersInChannel.TryAdd(currentUserId, activity);
             }
 
@@ -103,7 +103,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
                 var usersInChannel = GetUsersInVoiceChannel(previousChannelId);
                 if (usersInChannel.TryRemove(currentUserId, out var activity))
                 {
-                    if (usersInChannel.Count == 0)
+                    if (usersInChannel.IsEmpty)
                     {
                         activity.VoiceEnterDateTime = dtNow;
                     }
@@ -121,7 +121,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
                 }
 
                 // update new voice value
-                activity ??= new UserVoiceActivity(eventArgs.User.Id, eventArgs.Guild.Id, eventArgs.User.Username, eventArgs.User.Roles);
+                activity ??= new UserVoiceActivity(eventArgs.User.Id, eventArgs.Guild.Id, eventArgs.User.Nickname, eventArgs.User.Roles);
                 usersInChannel = GetUsersInVoiceChannel(currentChannelId);
                 if (usersInChannel.Count == 1)
                 {
@@ -139,6 +139,18 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
             while (_userActivitiesToCollect.TryDequeue(out var activity))
             {
                 yield return activity;
+            }
+        }
+
+        public void FinishAllActivities()
+        {
+            foreach (var keyValuePair in _usersActivity)
+            {
+                foreach (var currentActivityPair in keyValuePair.Value)
+                {
+                    var activity = currentActivityPair.Value;
+                    _userActivitiesToCollect.Enqueue(UpdateActivity(activity));
+                }
             }
         }
 

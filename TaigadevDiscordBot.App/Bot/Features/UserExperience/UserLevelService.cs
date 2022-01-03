@@ -32,7 +32,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserExperience
 
             ParallelEnumerable.Range(0, MaxLevel).ForAll(x => _levels.TryAdd(x, CalculateLevelExperience(x)));
 
-            ulong CalculateLevelExperience(int level) => (ulong)(level * level) * 5 + (ulong)level * 50 + 100;
+            static ulong CalculateLevelExperience(int level) => (ulong)(level * level) * 5 + (ulong)level * 50 + 100;
         }
 
         public async Task LevelUpUserIfNeededAsync(ulong userId, ulong guildId)
@@ -86,7 +86,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserExperience
                 // next level has no role
                 if (nextLevelRole is null)
                 {
-                    _logger.LogInformation($"Level '{user.Level}' role does not exist. User '{user.Username}' leveled up anyway");
+                    _logger.LogInformation($"Level '{user.Level}' role does not exist. User '{user.Nickname}' leveled up anyway");
                     return;
                 }
 
@@ -97,10 +97,10 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserExperience
                     .ToArrayAsync();
 
 #if DEBUG
-                _logger.LogDebug($"User '{dsUser.Username}' role '{nextLevelRole.Name}' added. (just log, nothing happen)");
+                _logger.LogDebug($"User '{dsUser.Nickname}' role '{nextLevelRole.Name}' added. (just log, nothing happen)");
                 if (levelRoles.Length > 0)
                 {
-                    _logger.LogDebug($"User '{dsUser.Username}' roles removed: ['{string.Join(", ", levelRoles)}'] removed. (just log, nothing happen)");
+                    _logger.LogDebug($"User '{dsUser.Nickname}' roles removed: ['{string.Join(", ", levelRoles)}'] removed. (just log, nothing happen)");
                 }
 #else
                 await dsUser.AddRoleAsync(nextLevelRole.Id);
@@ -110,7 +110,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserExperience
                 }
 #endif
 
-                _logger.LogInformation($"User '{dsUser.Username}' with id '{dsUser.Id}' level updated to '{nextLevelRole.Name}'");
+                _logger.LogInformation($"User '{dsUser.Nickname}' with id '{dsUser.Id}' level updated to '{nextLevelRole.Name}'");
             });
         }
 

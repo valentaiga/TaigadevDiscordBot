@@ -23,7 +23,7 @@ namespace TaigadevDiscordBot.Core.Bot.Features
         
         public ulong GuildId { get; set; }
 
-        public string Username { get; set; }
+        public string Nickname { get; set; }
 
         public ulong Experience { get; set; }
 

@@ -8,11 +8,11 @@ namespace TaigadevDiscordBot.Core.Bot.Features.UserActivity
 {
     public class UserVoiceActivity
     {
-        public UserVoiceActivity(ulong userId, ulong guildId, string username, IReadOnlyCollection<SocketRole> roles)
+        public UserVoiceActivity(ulong userId, ulong guildId, string nickname, IReadOnlyCollection<SocketRole> roles)
         {
             UserId = userId;
             GuildId = guildId;
-            Username = username;
+            Nickname = nickname;
             VoiceEnterDateTime = DateTime.UtcNow;
             TimeInVoiceSpent = TimeSpan.Zero;
             Roles = roles.Where(x => !x.IsEveryone).Select(x => x.Id).ToList();
@@ -22,7 +22,7 @@ namespace TaigadevDiscordBot.Core.Bot.Features.UserActivity
         public TimeSpan TimeInVoiceSpent;
         public ulong GuildId;
         public ulong UserId;
-        public string Username;
+        public string Nickname;
         public IReadOnlyList<ulong> Roles;
     }
 }

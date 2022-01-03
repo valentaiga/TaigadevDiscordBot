@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 using Discord;
 using Discord.WebSocket;
+
 using TaigadevDiscordBot.Core.Bot;
 using TaigadevDiscordBot.Core.Bot.Features;
 using TaigadevDiscordBot.Core.Bot.Features.Commands;
@@ -34,7 +35,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands.Profile
             var user = await _userRepository.GetOrCreateUserAsync(dsUser.Id, guild.Id);
 
             var embedBuilder = new EmbedBuilder()
-                .WithTitle($"{dsUser.Username} profile")
+                .WithTitle($"{dsUser.Nickname} profile")
                 .AddField("Level", user.Level, true)
                 .AddField("Experience", user.Experience, true)
                 .AddField("Cookies", user.CookiesCollected, true)

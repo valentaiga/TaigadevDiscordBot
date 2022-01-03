@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 using TaigadevDiscordBot.Core.Bot.Features;
+using TaigadevDiscordBot.Core.Bot.Features.Service;
 using TaigadevDiscordBot.Core.Bot.Features.UserActivity;
 using TaigadevDiscordBot.Core.Bot.Features.UserExperience;
 
@@ -18,6 +19,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
         private readonly IExperienceCalculationService _experienceCalculationService;
         private readonly IUserRepository _userRepository;
         private readonly IUserLevelService _userLevelService;
+        private readonly IBotMaintainingService _botMaintainingService;
         private readonly ILogger<UserActivityUpdateHostService> _logger;
         private readonly TimeSpan _executionTimespan;
         private Timer _timer = null!;
@@ -27,12 +29,14 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
             IExperienceCalculationService experienceCalculationService, 
             IUserRepository userRepository,
             IUserLevelService userLevelService,
+            IBotMaintainingService botMaintainingService,
             ILogger<UserActivityUpdateHostService> logger)
         {
             _voiceActivityService = voiceActivityService;
             _experienceCalculationService = experienceCalculationService;
             _userRepository = userRepository;
             _userLevelService = userLevelService;
+            _botMaintainingService = botMaintainingService;
             _logger = logger;
             _executionTimespan = TimeSpan.FromSeconds(5);
         }
@@ -43,11 +47,11 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
             return Task.CompletedTask;
         }
 
-        public Task StopAsync(CancellationToken cancellationToken)
+        public async Task StopAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation("Service stopped");
             _timer.Change(Timeout.Infinite, 0);
-            return Task.CompletedTask;
+            await _botMaintainingService.SaveUsersActivitiesAsync();
         }
 
         private async void ExecuteAsync(object? state)
@@ -71,7 +75,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
                     await _userRepository.UpdateUserAsync(activity.UserId, activity.GuildId, user =>
                     {
                         user.TotalVoiceActivity += activity.TimeInVoiceSpent;
-                        user.Username = activity.Username;
+                        user.Nickname = activity.Nickname;
                         user.Roles = activity.Roles;
                         user.Experience += expToAdd;
                         return Task.CompletedTask;
