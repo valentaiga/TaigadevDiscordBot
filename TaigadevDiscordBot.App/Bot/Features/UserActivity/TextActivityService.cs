@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Linq;
 using System.Threading.Tasks;
 
 using TaigadevDiscordBot.Core.Bot.Event.EventArgs;
@@ -33,6 +34,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
                 await _userRepository.UpdateUserAsync(eventArgs.User.Id, eventArgs.Guild.Id, user =>
                 {
                     user.Username = eventArgs.User.Username;
+                    user.Roles = eventArgs.User.Roles.Where(x => !x.IsEveryone).Select(x => x.Id).ToList();
                     user.Experience += _experienceCalculationService.CalculateChatMessageExperience(1);
                     return Task.CompletedTask;
                 });

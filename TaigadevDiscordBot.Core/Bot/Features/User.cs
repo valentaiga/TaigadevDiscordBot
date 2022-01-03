@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
+
 using TaigadevDiscordBot.Core.Database.Redis;
 
 namespace TaigadevDiscordBot.Core.Bot.Features
@@ -29,11 +31,13 @@ namespace TaigadevDiscordBot.Core.Bot.Features
 
         public int CookiesCollected { get; set; }
 
+        public IReadOnlyList<ulong> Roles { get; set; } = new List<ulong>(0);
+
         [JsonIgnore]
         public TimeSpan TotalVoiceActivity { get; set; }
 
         [JsonPropertyName("TotalVoiceActivity")]
-        private string TimeInVoiceSpentString
+        public string TimeInVoiceSpentString
         {
             get => TotalVoiceActivity.ToString();
             set => TotalVoiceActivity = TimeSpan.TryParse(value, out var result) ? result : default;

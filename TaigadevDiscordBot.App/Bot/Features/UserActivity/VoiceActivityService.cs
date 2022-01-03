@@ -53,7 +53,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
             {
                 // finish current user activity
                 var userMuted = eventArgs.User.IsMuted();
-                if (eventArgs.CurrentChannel is null && userMuted)
+                if (eventArgs.CurrentChannel is null || userMuted)
                 {
                     return;
                 }
@@ -88,7 +88,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
                 }
 
                 // start new current user activity
-                var activity = new UserVoiceActivity(eventArgs.User.Id, eventArgs.Guild.Id, eventArgs.User.Username);
+                var activity = new UserVoiceActivity(eventArgs.User.Id, eventArgs.Guild.Id, eventArgs.User.Username, eventArgs.User.Roles);
                 usersInChannel.TryAdd(currentUserId, activity);
             }
 
@@ -121,7 +121,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
                 }
 
                 // update new voice value
-                activity ??= new UserVoiceActivity(eventArgs.User.Id, eventArgs.Guild.Id, eventArgs.User.Username);
+                activity ??= new UserVoiceActivity(eventArgs.User.Id, eventArgs.Guild.Id, eventArgs.User.Username, eventArgs.User.Roles);
                 usersInChannel = GetUsersInVoiceChannel(currentChannelId);
                 if (usersInChannel.Count == 1)
                 {

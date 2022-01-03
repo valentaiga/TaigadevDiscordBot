@@ -72,6 +72,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
                     {
                         user.TotalVoiceActivity += activity.TimeInVoiceSpent;
                         user.Username = activity.Username;
+                        user.Roles = activity.Roles;
                         user.Experience += expToAdd;
                         return Task.CompletedTask;
                     });

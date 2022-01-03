@@ -59,7 +59,7 @@ namespace TaigadevDiscordBot.App.Bot
                 && !message.Author.IsBot
                 && message.Channel is SocketGuildChannel textChannel)
             {
-                var eventArgs = new NewTextMessageEventArgs(message, message.Author, textChannel.Guild);
+                var eventArgs = new NewTextMessageEventArgs(message, message.Author as SocketGuildUser, textChannel.Guild);
                 try
                 {
                     await NewTextMessageHandler(eventArgs);

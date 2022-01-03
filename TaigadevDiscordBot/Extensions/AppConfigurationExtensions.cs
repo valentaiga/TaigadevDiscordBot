@@ -11,6 +11,7 @@ using TaigadevDiscordBot.App.Bot;
 using TaigadevDiscordBot.App.Bot.Features;
 using TaigadevDiscordBot.App.Bot.Features.Commands;
 using TaigadevDiscordBot.App.Bot.Features.Commands.Fun;
+using TaigadevDiscordBot.App.Bot.Features.Commands.Profile;
 using TaigadevDiscordBot.App.Bot.Features.UserActivity;
 using TaigadevDiscordBot.App.Bot.Features.UserExperience;
 using TaigadevDiscordBot.App.Database.Redis;
@@ -52,7 +53,8 @@ namespace TaigadevDiscordBot.Extensions
                 // commands
                 services.AddSingleton<ICommandService, CommandService>();
                 services.AddSingleton<ITextChannelCommand, ChaosVoiceMoveCommand>();
-
+                services.AddSingleton<ITextChannelCommand, GetProfileCommand>();
+                
                 // client
                 services.AddSingleton<DiscordSocketClient>();
                 services.AddSingleton<IBotConfiguration, BotConfiguration>();

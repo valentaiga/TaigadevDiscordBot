@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 
 using TaigadevDiscordBot.App.Constants;
@@ -20,11 +20,14 @@ namespace TaigadevDiscordBot.App.Bot
             ServiceChannels = configuration.GetSection(ConfigurationKeys.Discord.ServiceChannels).Get<List<GuildChannel>>();
         }
 
+        public void SetSelfUser(SocketSelfUser selfUser) => SelfUser = selfUser;
+
         public string AdminId { get; }
         public string Token { get; }
         
         public IList<ulong> WorkOnServerIds { get; }
         public string ServiceCategoryName { get; }
         public IList<GuildChannel> ServiceChannels { get; }
+        public SocketSelfUser SelfUser { get; private set; }
     }
 }

@@ -12,15 +12,9 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands.Fun
 {
     public class ChaosVoiceMoveCommand : ITextChannelCommand
     {
-        private readonly Random _random;
+        private readonly Random _random = new();
 
-        public ChaosVoiceMoveCommand()
-        {
-            Command = "chaosmove";
-            _random = new();
-        }
-
-        public string Command { get; }
+        public string Command { get; } = "chaosmove";
 
         public async Task ExecuteAsync(SocketMessage message, SocketGuild guild)
         {

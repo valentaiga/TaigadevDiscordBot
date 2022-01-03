@@ -16,19 +16,19 @@ namespace TaigadevDiscordBot.App.Bot
 {
     public class BotClient : IHostedService, IDisposable
     {
-        private readonly IBotConfiguration _configuration;
+        private readonly IBotConfiguration _botConfiguration;
         private readonly DiscordSocketClient _botClient;
         private readonly IEnumerable<IInitializationModule> _initializationModules;
         private readonly ILogger<BotClient> _logger;
 
         public BotClient(
-            IBotConfiguration configuration, 
+            IBotConfiguration botConfiguration, 
             DiscordSocketClient botClient, 
             IUserEventHandler eventHandler, 
             IEnumerable<IInitializationModule> initializationModules, 
             ILogger<BotClient> logger)
         {
-            _configuration = configuration;
+            _botConfiguration = botConfiguration;
             _botClient = botClient;
             _initializationModules = initializationModules;
             _logger = logger;
@@ -44,6 +44,7 @@ namespace TaigadevDiscordBot.App.Bot
 
         private async Task BotClientOnReady()
         {
+            _botConfiguration.SetSelfUser(_botClient.CurrentUser);
             foreach (var initializationModule in _initializationModules)
             {
                 await initializationModule.InitializeAsync(_botClient);
@@ -54,7 +55,7 @@ namespace TaigadevDiscordBot.App.Bot
         {
             try
             {
-                await _botClient.LoginAsync(TokenType.Bot, _configuration.Token);
+                await _botClient.LoginAsync(TokenType.Bot, _botConfiguration.Token);
                 await _botClient.StartAsync();
             }
             catch (Exception ex)

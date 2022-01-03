@@ -110,7 +110,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserExperience
                 }
 #endif
 
-                _logger.LogInformation($"User level updated to '{nextLevelRole.Name}'");
+                _logger.LogInformation($"User '{dsUser.Username}' with id '{dsUser.Id}' level updated to '{nextLevelRole.Name}'");
             });
         }
 

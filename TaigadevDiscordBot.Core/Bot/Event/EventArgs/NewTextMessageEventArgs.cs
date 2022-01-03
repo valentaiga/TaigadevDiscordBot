@@ -4,7 +4,7 @@ namespace TaigadevDiscordBot.Core.Bot.Event.EventArgs
 {
     public class NewTextMessageEventArgs
     {
-        public NewTextMessageEventArgs(SocketMessage message, SocketUser user, SocketGuild guild)
+        public NewTextMessageEventArgs(SocketMessage message, SocketGuildUser user, SocketGuild guild)
         {
             Message = message;
             User = user;
@@ -12,7 +12,7 @@ namespace TaigadevDiscordBot.Core.Bot.Event.EventArgs
         }
         
         public SocketMessage Message;
-        public SocketUser User;
+        public SocketGuildUser User;
         public SocketGuild Guild;
     }
 }
