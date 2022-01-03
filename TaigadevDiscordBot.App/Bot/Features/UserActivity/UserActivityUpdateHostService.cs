@@ -76,7 +76,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
                         return Task.CompletedTask;
                     });
 
-                    await _userLevelService.LevelUpUserIfNeeded(activity.UserId, activity.GuildId);
+                    await _userLevelService.LevelUpUserIfNeededAsync(activity.UserId, activity.GuildId);
                 }
                 catch (Exception ex)
                 {

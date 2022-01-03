@@ -9,6 +9,6 @@ namespace TaigadevDiscordBot.Core.Bot.Features
 
         Task SaveUserAsync(User user);
 
-        Task UpdateUserAsync(ulong userId, ulong guildId, Func<User, Task> updateAction);
+        Task<User> UpdateUserAsync(ulong userId, ulong guildId, Func<User, Task> updateAction);
     }
 }

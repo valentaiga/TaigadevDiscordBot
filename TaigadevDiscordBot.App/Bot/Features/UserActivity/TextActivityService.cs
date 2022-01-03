@@ -37,7 +37,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
                     return Task.CompletedTask;
                 });
 
-                await _userLevelService.LevelUpUserIfNeeded(eventArgs.User.Id, eventArgs.Guild.Id);
+                await _userLevelService.LevelUpUserIfNeededAsync(eventArgs.User.Id, eventArgs.Guild.Id);
             }
 
             _channelsActivity.TryAdd(key, eventArgs.User.Id);

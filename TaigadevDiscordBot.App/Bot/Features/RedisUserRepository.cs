@@ -39,11 +39,12 @@ namespace TaigadevDiscordBot.App.Bot.Features
             _logger.LogDebug($"User '{user.Username}' with key '{user.GetCacheKey()}' updated");
         }
 
-        public async Task UpdateUserAsync(ulong userId, ulong guildId, Func<User, Task> updateAction)
+        public async Task<User> UpdateUserAsync(ulong userId, ulong guildId, Func<User, Task> updateAction)
         {
             var user = await GetOrCreateUserAsync(userId, guildId);
             await updateAction(user);
             await SaveUserAsync(user);
+            return user;
         }
     }
 }

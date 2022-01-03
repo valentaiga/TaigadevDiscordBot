@@ -16,7 +16,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserExperience
     {
                                             // lvl / exp
         private readonly ConcurrentDictionary<int, ulong> _levels = new();
-        private readonly Regex _roleLevelRegex = new(@"^([0-9][0-9]?\.)|(100\.)$");
+        private readonly Regex _roleLevelRegex = new(@"^([0-9][0-9]?\.)|(100\.)");
 
         private readonly IUserRepository _userRepository;
         private readonly DiscordSocketClient _client;
@@ -35,13 +35,18 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserExperience
             ulong CalculateLevelExperience(int level) => (ulong)(level * level) * 5 + (ulong)level * 50 + 100;
         }
 
-        public async Task LevelUpUserIfNeeded(ulong userId, ulong guildId)
+        public async Task LevelUpUserIfNeededAsync(ulong userId, ulong guildId)
         {
             var user = await _userRepository.GetOrCreateUserAsync(userId, guildId);
 
-            if (IsRoleUpdateAvailable(user.Experience, user.Level))
+            if (user.Level == MaxLevel)
             {
-                await LevelUpUserAsync(userId, guildId);
+                return;
+            }
+
+            while (IsRoleUpdateAvailable(user.Experience, user.Level))
+            {
+                user = await LevelUpUserAsync(userId, guildId);
             }
         }
 
@@ -56,7 +61,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserExperience
             return currentExperience > requiredExperience;
         }
 
-        public Task LevelUpUserAsync(ulong userId, ulong guildId)
+        public Task<User> LevelUpUserAsync(ulong userId, ulong guildId)
         {
             return _userRepository.UpdateUserAsync(userId, guildId, async user =>
             {
@@ -86,15 +91,24 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserExperience
                 }
 
                 var levelRoles = await dsUser.Roles.ToAsyncEnumerable()
-                    .Where(x => _roleLevelRegex.IsMatch(x.Name)).Select(x => x.Id)
+                    .Where(x => _roleLevelRegex.IsMatch(x.Name))
+                    .Select(x => x.Id)
                     .Except(new[] {nextLevelRole.Id}.ToAsyncEnumerable())
                     .ToArrayAsync();
 
+#if DEBUG
+                _logger.LogDebug($"User '{dsUser.Username}' role '{nextLevelRole.Name}' added. (just log, nothing happen)");
+                if (levelRoles.Length > 0)
+                {
+                    _logger.LogDebug($"User '{dsUser.Username}' roles removed: ['{string.Join(", ", levelRoles)}'] removed. (just log, nothing happen)");
+                }
+#else
                 await dsUser.AddRoleAsync(nextLevelRole.Id);
                 if (levelRoles.Length > 0)
                 {
                     await dsUser.RemoveRolesAsync(levelRoles);
                 }
+#endif
 
                 _logger.LogInformation($"User level updated to '{nextLevelRole.Name}'");
             });

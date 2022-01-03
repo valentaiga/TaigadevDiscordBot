@@ -32,7 +32,8 @@ namespace TaigadevDiscordBot.App.Bot
             _botClient = botClient;
             _initializationModules = initializationModules;
             _logger = logger;
-
+            // todo: store user roles too and give them back as he re-joins the server
+            // todo: set initial role to newly joined users
             // events
             _botClient.UserVoiceStateUpdated += eventHandler.OnUserVoiceStateUpdated;
             _botClient.MessageReceived += eventHandler.OnMessageReceived;
