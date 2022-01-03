@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using TaigadevDiscordBot.Core.Bot;
 using TaigadevDiscordBot.Core.Bot.Event;
+using TaigadevDiscordBot.Core.Initialization;
 
 namespace TaigadevDiscordBot.App.Bot
 {
@@ -16,12 +18,19 @@ namespace TaigadevDiscordBot.App.Bot
     {
         private readonly IBotConfiguration _configuration;
         private readonly DiscordSocketClient _botClient;
+        private readonly IEnumerable<IInitializationModule> _initializationModules;
         private readonly ILogger<BotClient> _logger;
 
-        public BotClient(IBotConfiguration configuration, DiscordSocketClient botClient, IUserEventHandler eventHandler, ILogger<BotClient> logger)
+        public BotClient(
+            IBotConfiguration configuration, 
+            DiscordSocketClient botClient, 
+            IUserEventHandler eventHandler, 
+            IEnumerable<IInitializationModule> initializationModules, 
+            ILogger<BotClient> logger)
         {
             _configuration = configuration;
             _botClient = botClient;
+            _initializationModules = initializationModules;
             _logger = logger;
 
             // events
@@ -29,6 +38,15 @@ namespace TaigadevDiscordBot.App.Bot
             _botClient.MessageReceived += eventHandler.OnMessageReceived;
             _botClient.ReactionAdded += eventHandler.OnReactionAdded;
             _botClient.Connected += BotClientOnConnected;
+            _botClient.Ready += BotClientOnReady;
+        }
+
+        private async Task BotClientOnReady()
+        {
+            foreach (var initializationModule in _initializationModules)
+            {
+                await initializationModule.InitializeAsync(_botClient);
+            }
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)

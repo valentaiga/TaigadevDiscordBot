@@ -11,7 +11,7 @@ namespace TaigadevDiscordBot.App.Database.Redis
 
         public RedisRepository(IRedisProvider redisProvider)
         {
-            // todo: add method to fetch all saved guild users (do I need it?)
+            // if I would fetch all saved guild users check: https://stackexchange.github.io/StackExchange.Redis/KeysScan
             _redisProvider = redisProvider;
         }
 

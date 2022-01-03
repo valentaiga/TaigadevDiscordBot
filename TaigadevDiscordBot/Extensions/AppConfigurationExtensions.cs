@@ -14,6 +14,7 @@ using TaigadevDiscordBot.App.Bot.Features.Commands.Fun;
 using TaigadevDiscordBot.App.Bot.Features.UserActivity;
 using TaigadevDiscordBot.App.Bot.Features.UserExperience;
 using TaigadevDiscordBot.App.Database.Redis;
+using TaigadevDiscordBot.App.Initialization;
 using TaigadevDiscordBot.Core.Bot;
 using TaigadevDiscordBot.Core.Bot.Event;
 using TaigadevDiscordBot.Core.Bot.Features;
@@ -21,6 +22,7 @@ using TaigadevDiscordBot.Core.Bot.Features.Commands;
 using TaigadevDiscordBot.Core.Bot.Features.UserActivity;
 using TaigadevDiscordBot.Core.Bot.Features.UserExperience;
 using TaigadevDiscordBot.Core.Database.Redis;
+using TaigadevDiscordBot.Core.Initialization;
 
 namespace TaigadevDiscordBot.Extensions
 {
@@ -43,6 +45,9 @@ namespace TaigadevDiscordBot.Extensions
                 services.AddSingleton<IUserRepository, RedisUserRepository>();
                 services.AddSingleton<IVoiceActivityService, VoiceActivityService>();
                 services.AddSingleton<ITextActivityService, TextActivityService>();
+
+                // initialization modules
+                services.AddSingleton<IInitializationModule, ServiceChannelsInitialization>();
 
                 // commands
                 services.AddSingleton<ICommandService, CommandService>();
