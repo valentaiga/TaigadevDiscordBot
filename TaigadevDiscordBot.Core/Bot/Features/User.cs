@@ -39,6 +39,8 @@ namespace TaigadevDiscordBot.Core.Bot.Features
             set => TotalVoiceActivity = TimeSpan.TryParse(value, out var result) ? result : default;
         }
 
+        public bool LevelMigrationNotNeeded { get; set; }
+
         public string GetCacheKey()
             => GetCacheKey(GuildId, UserId);
 

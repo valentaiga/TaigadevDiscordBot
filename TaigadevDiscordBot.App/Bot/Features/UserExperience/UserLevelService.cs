@@ -66,7 +66,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserExperience
                 }
                 
                 // migration from jupiter bot activity
-                await MigrateUserLevelAsync(user, userId, guildId);
+                await TryMigrateUserLevelAsync(user, userId, guildId);
 
                 // uncomment if experience should be removed after level-up
                 //var requiredExperience = _levels[user.Level++];
@@ -100,9 +100,9 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserExperience
             });
         }
 
-        private async Task MigrateUserLevelAsync(User user, ulong userId, ulong guildId)
+        private async Task TryMigrateUserLevelAsync(User user, ulong userId, ulong guildId)
         {
-            if (user.Level != 0)
+            if (user.LevelMigrationNotNeeded)
             {
                 return;
             }
@@ -116,7 +116,8 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserExperience
                 .OrderByDescending(x => x.Item1)
                 .FirstOrDefaultAsync();
 
-            if (role is null || level == 0)
+            user.LevelMigrationNotNeeded = true;
+            if (role is null || level == 0 || level == user.Level)
             {
                 return;
             }
