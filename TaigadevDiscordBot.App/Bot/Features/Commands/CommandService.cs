@@ -7,16 +7,19 @@ using Discord.WebSocket;
 
 using TaigadevDiscordBot.Core.Bot.Event.EventArgs;
 using TaigadevDiscordBot.Core.Bot.Features.Commands;
+using TaigadevDiscordBot.Core.Bot.Features.Service;
 
 namespace TaigadevDiscordBot.App.Bot.Features.Commands
 {
     public class CommandService : ICommandService
     {
         private readonly string _prefix;
-        private readonly ConcurrentDictionary<string, ITextChannelCommand> _textCommands;
+        private readonly ConcurrentDictionary<string, ICommand> _textCommands;
+        private readonly IAuditLogger _auditLogger;
 
-        public CommandService(IEnumerable<ITextChannelCommand> textCommands)
+        public CommandService(IEnumerable<ICommand> textCommands, IAuditLogger auditLogger)
         {
+            _auditLogger = auditLogger;
             _prefix = "t!";
             _textCommands = new(textCommands.ToDictionary(x => x.Command, x => x));
         }
@@ -35,6 +38,16 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands
 
             if (_textCommands.TryGetValue(textCommand, out var command))
             {
+                await _auditLogger.LogInformationAsync(
+                    null,
+                    eventArgs.Guild.Id,
+                    new Dictionary<string, string>
+                    {
+                        { "Author", eventArgs.User.Mention },
+                        { "Command", textCommand },
+                        { "Mentioned", eventArgs.Message.MentionedUsers.Count > 0 ? string.Join(", ", eventArgs.Message.MentionedUsers) : "<none>" },
+                        { "Message", eventArgs.Message.Content}
+                    });
                 // todo: add required permissions for commands
                 // todo: use slash with prefix instead of just prefix in chat - https://labs.discordnet.dev/guides/int_basics/application-commands/slash-commands/creating-slash-commands.html
                 await command.ExecuteAsync(eventArgs.Message, eventArgs.Guild);

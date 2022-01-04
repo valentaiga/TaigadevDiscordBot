@@ -23,7 +23,10 @@ namespace TaigadevDiscordBot.App.Bot.Features.Service
         public async Task SaveUsersActivitiesAsync()
         {
             var activities = _voiceActivityService.CollectActivities().ToArray();
-            await _redisProvider.AddToListAsync(CacheKey, activities);
+            if (activities.Length > 0)
+            {
+                await _redisProvider.AddToListAsync(CacheKey, activities);
+            }
         }
 
         public async Task ProcessSavedUsersActivitiesAsync()

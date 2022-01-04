@@ -12,6 +12,7 @@ using TaigadevDiscordBot.App.Bot.Features;
 using TaigadevDiscordBot.App.Bot.Features.Commands;
 using TaigadevDiscordBot.App.Bot.Features.Commands.Fun;
 using TaigadevDiscordBot.App.Bot.Features.Commands.Profile;
+using TaigadevDiscordBot.App.Bot.Features.Commands.Unspecified;
 using TaigadevDiscordBot.App.Bot.Features.Service;
 using TaigadevDiscordBot.App.Bot.Features.UserActivity;
 using TaigadevDiscordBot.App.Bot.Features.UserExperience;
@@ -49,6 +50,7 @@ namespace TaigadevDiscordBot.Extensions
                 services.AddSingleton<IVoiceActivityService, VoiceActivityService>();
                 services.AddSingleton<ITextActivityService, TextActivityService>();
                 services.AddSingleton<IBotMaintainingService, BotMaintainingService>();
+                services.AddSingleton<IAuditLogger, AuditLogger>();
 
                 // initialization modules
                 services.AddSingleton<IInitializationModule, ServiceChannelsInitialization>();
@@ -56,9 +58,11 @@ namespace TaigadevDiscordBot.Extensions
 
                 // commands
                 services.AddSingleton<ICommandService, CommandService>();
-                services.AddSingleton<ITextChannelCommand, ChaosVoiceMoveCommand>();
-                services.AddSingleton<ITextChannelCommand, GetProfileCommand>();
-                
+                services.AddSingleton<ICommand, ChaosVoiceMoveCommand>();
+                services.AddSingleton<ICommand, GetProfileCommand>();
+                services.AddSingleton<ICommand, HelpCommand>();
+                services.AddSingleton<ICommand, GetHostedServicesCommand>();
+
                 // client
                 services.AddSingleton<DiscordSocketClient>();
                 services.AddSingleton<IBotConfiguration, BotConfiguration>();

@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using TaigadevDiscordBot.Core.Bot;
 using TaigadevDiscordBot.Core.Bot.Event;
+using TaigadevDiscordBot.Core.Bot.Features.Service;
 using TaigadevDiscordBot.Core.Initialization;
 
 namespace TaigadevDiscordBot.App.Bot
@@ -18,18 +19,21 @@ namespace TaigadevDiscordBot.App.Bot
     {
         private readonly IBotConfiguration _botConfiguration;
         private readonly DiscordSocketClient _botClient;
+        private readonly IAuditLogger _auditLogger;
         private readonly IEnumerable<IInitializationModule> _initializationModules;
         private readonly ILogger<BotClient> _logger;
 
         public BotClient(
             IBotConfiguration botConfiguration, 
             DiscordSocketClient botClient, 
-            IUserEventHandler eventHandler, 
+            IUserEventHandler eventHandler,
+            IAuditLogger auditLogger,
             IEnumerable<IInitializationModule> initializationModules, 
             ILogger<BotClient> logger)
         {
             _botConfiguration = botConfiguration;
             _botClient = botClient;
+            _auditLogger = auditLogger;
             _initializationModules = initializationModules;
             _logger = logger;
             // todo: store user roles too and give them back as he re-joins the server
@@ -49,6 +53,11 @@ namespace TaigadevDiscordBot.App.Bot
             {
                 await initializationModule.InitializeAsync(_botClient);
             }
+
+            foreach (var guild in _botClient.Guilds)
+            {
+                await _auditLogger.LogInformationAsync("Bot connected", guild.Id);
+            }
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -66,9 +75,13 @@ namespace TaigadevDiscordBot.App.Bot
             }
         }
 
-        public Task StopAsync(CancellationToken cancellationToken)
+        public async Task StopAsync(CancellationToken cancellationToken)
         {
-            return _botClient.StopAsync();
+            foreach (var guild in _botClient.Guilds)
+            {
+                await _auditLogger.LogInformationAsync("Bot is shutting down", guild.Id);
+            }
+            await _botClient.StopAsync();
         }
 
         private Task BotClientOnConnected()

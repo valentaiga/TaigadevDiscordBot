@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
+
 using Discord.WebSocket;
 
 namespace TaigadevDiscordBot.Core.Bot.Features.Service
@@ -8,9 +10,10 @@ namespace TaigadevDiscordBot.Core.Bot.Features.Service
         [JsonConstructor]
         public GuildChannel()
         {
+            Channels = new List<SocketTextChannel>();
         }
 
-        public GuildChannel(string name, string description)
+        public GuildChannel(string name, string description) : this()
         {
             Name = name;
             Description = description;
@@ -21,7 +24,7 @@ namespace TaigadevDiscordBot.Core.Bot.Features.Service
         public string Description { get; set; }
         
         [JsonIgnore]
-        public SocketTextChannel Channel { get; set; }
+        public List<SocketTextChannel> Channels { get; set; } 
 
         public bool IsAudit { get; set; }
     }

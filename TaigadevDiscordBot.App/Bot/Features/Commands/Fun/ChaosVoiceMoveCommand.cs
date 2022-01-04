@@ -10,13 +10,17 @@ using TaigadevDiscordBot.Core.Extensions;
 
 namespace TaigadevDiscordBot.App.Bot.Features.Commands.Fun
 {
-    public class ChaosVoiceMoveCommand : ITextChannelCommand
+    public class ChaosVoiceMoveCommand : CommandBase
     {
         private readonly Random _random = new();
 
-        public string Command { get; } = "chaosmove";
+        public ChaosVoiceMoveCommand()
+            : base("chaosmove", "Chaotic user movement between voice channels", $"t!chaosmove @mention", true)
+        {
+            
+        }
 
-        public async Task ExecuteAsync(SocketMessage message, SocketGuild guild)
+        public override async Task ExecuteAsync(SocketMessage message, SocketGuild guild)
         {
             if (message.MentionedUsers.FirstOrDefault() is not SocketGuildUser mentionedUser)
             {

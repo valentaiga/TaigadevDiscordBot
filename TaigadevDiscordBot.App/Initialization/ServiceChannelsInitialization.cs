@@ -67,19 +67,19 @@ namespace TaigadevDiscordBot.App.Initialization
 
         private async Task TryCreateServiceTextChannelAsync(SocketCategoryChannel serviceCategory, GuildChannel serviceChannel)
         {
-            var result = serviceCategory.Channels.FirstOrDefault(x => x.Name.Equals(serviceChannel.Name, StringComparison.InvariantCultureIgnoreCase));
-            if (result is not null)
+            var result = serviceCategory.Channels.FirstOrDefault(x => x.Name.Equals(serviceChannel.Name, StringComparison.InvariantCultureIgnoreCase)) as SocketTextChannel;
+            if (result is null)
             {
-                return;
+                var restChannel = await serviceCategory.Guild.CreateTextChannelAsync(serviceChannel.Name, prop =>
+                {
+                    prop.CategoryId = serviceCategory.Id;
+                    prop.Topic = serviceChannel.Description;
+                });
+                _logger.LogInformation($"Channel '{serviceChannel.Name}' successfully created on '{serviceCategory.Guild.Name}' server with id '{serviceCategory.Guild.Id}'.");
+                result = serviceCategory.Guild.GetTextChannel(restChannel.Id);
             }
 
-            var restChannel = await serviceCategory.Guild.CreateTextChannelAsync(serviceChannel.Name, prop =>
-            {
-                prop.CategoryId = serviceCategory.Id;
-                prop.Topic = serviceChannel.Description;
-            });
-            _logger.LogInformation($"Channel '{serviceChannel.Name}' successfully created on '{serviceCategory.Guild.Name}' server with id '{serviceCategory.Guild.Id}'.");
-            serviceChannel.Channel = serviceCategory.Guild.GetTextChannel(restChannel.Id);
+            serviceChannel.Channels.Add(result);
         }
     }
 }

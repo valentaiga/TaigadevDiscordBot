@@ -53,7 +53,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
             {
                 // finish current user activity
                 var userMuted = eventArgs.User.IsMuted();
-                if (eventArgs.CurrentChannel is null || userMuted)
+                if ((eventArgs.CurrentChannel ?? eventArgs.PreviousChannel) is null && userMuted)
                 {
                     return;
                 }

@@ -27,7 +27,7 @@ namespace TaigadevDiscordBot.App.Bot
         
         public IList<ulong> WorkOnServerIds { get; }
         public string ServiceCategoryName { get; }
-        public IList<GuildChannel> ServiceChannels { get; }
+        public List<GuildChannel> ServiceChannels { get; }
         public SocketSelfUser SelfUser { get; private set; }
     }
 }

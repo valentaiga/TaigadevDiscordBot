@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using TaigadevDiscordBot.Core.Bot.Event;
 using TaigadevDiscordBot.Core.Bot.Event.EventArgs;
 using TaigadevDiscordBot.Core.Bot.Features.Commands;
+using TaigadevDiscordBot.Core.Bot.Features.Service;
 using TaigadevDiscordBot.Core.Bot.Features.UserActivity;
 
 namespace TaigadevDiscordBot.App.Bot
@@ -16,6 +17,7 @@ namespace TaigadevDiscordBot.App.Bot
     public class UserEventHandler : IUserEventHandler
     {
         private readonly ITextActivityService _textActivityService;
+        private readonly IAuditLogger _auditLogger;
         private readonly ILogger<UserEventHandler> _logger;
 
         private event Func<VoiceStatusUpdatedEventArgs, ValueTask> VoiceStatusUpdatedHandler;
@@ -25,9 +27,11 @@ namespace TaigadevDiscordBot.App.Bot
             IVoiceActivityService voiceActivityService, 
             ITextActivityService textActivityService, 
             ICommandService commandService,
+            IAuditLogger auditLogger,
             ILogger<UserEventHandler> logger)
         {
             _textActivityService = textActivityService;
+            _auditLogger = auditLogger;
             _logger = logger;
             VoiceStatusUpdatedHandler += voiceActivityService.UpdateUserVoiceActivityAsync;
             NewTextMessageHandler += textActivityService.UpdateUserTextActivityAsync;
@@ -46,6 +50,7 @@ namespace TaigadevDiscordBot.App.Bot
                 catch (Exception ex)
                 {
                     _logger.LogError($"Error during voice activity: {ex}");
+                    await _auditLogger.LogErrorAsync(ex, guildUser.Guild.Id);
                 }
             }
 
@@ -67,6 +72,7 @@ namespace TaigadevDiscordBot.App.Bot
                 catch (Exception ex)
                 {
                     _logger.LogError($"Error during message processing: {ex}");
+                    await _auditLogger.LogErrorAsync(ex, textChannel.Guild.Id);
                 }
             }
         }
