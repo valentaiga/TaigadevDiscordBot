@@ -17,7 +17,12 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands.Profile
         private readonly IBotConfiguration _botConfiguration;
 
         public GetProfileCommand(IUserRepository userRepository, IBotConfiguration botConfiguration)
-            : base("profile", "Get profile", $"t!profile @mention", false)
+            : base(
+                "profile", 
+                "Get profile", 
+                $"t!profile @mention", 
+                false,
+                GuildPermission.SendMessages)
         {
             _userRepository = userRepository;
             _botConfiguration = botConfiguration;

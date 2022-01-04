@@ -16,7 +16,12 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands.Unspecified
         private readonly IServiceProvider _serviceProvider;
 
         public HelpCommand(IServiceProvider serviceProvider)
-            : base("help", "Get list of all commands", "t!help", false)
+            : base(
+                "help", 
+                "Get list of all commands", 
+                "t!help", 
+                false,
+                GuildPermission.SendMessages)
         {
             _serviceProvider = serviceProvider;
         }

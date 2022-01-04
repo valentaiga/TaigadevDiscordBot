@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-
+using Discord;
 using Discord.WebSocket;
 
 using TaigadevDiscordBot.Core.Bot.Features.Commands;
@@ -8,12 +8,13 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands
 {
     public abstract class CommandBase : ICommand
     {
-        protected CommandBase(string command, string description, string usageExample, bool auditCommand)
+        protected CommandBase(string command, string description, string usageExample, bool auditCommand, GuildPermission requiredPermissions)
         {
             Command = command;
             Description = description;
             UsageExample = usageExample;
             AuditCommand = auditCommand;
+            RequiredPermissions = requiredPermissions;
         }
 
         public string Command { get; }
@@ -23,6 +24,8 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands
         public string UsageExample { get; }
 
         public bool AuditCommand { get; }
+
+        public GuildPermission RequiredPermissions { get; }
 
         public abstract Task ExecuteAsync(SocketMessage message, SocketGuild guild);
     }

@@ -2,7 +2,7 @@
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
-
+using Discord;
 using Discord.WebSocket;
 
 using TaigadevDiscordBot.Core.Bot.Features.Commands;
@@ -15,9 +15,13 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands.Fun
         private readonly Random _random = new();
 
         public ChaosVoiceMoveCommand()
-            : base("chaosmove", "Chaotic user movement between voice channels", $"t!chaosmove @mention", true)
+            : base(
+                "chaosmove", 
+                "Chaotic user movement between voice channels", 
+                $"t!chaosmove @mention", 
+                true,
+                GuildPermission.MoveMembers)
         {
-            
         }
 
         public override async Task ExecuteAsync(SocketMessage message, SocketGuild guild)
