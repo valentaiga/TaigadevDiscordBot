@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
+
 using Discord;
 using Discord.WebSocket;
+
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+
 using TaigadevDiscordBot.Core.Extensions;
 
 namespace TaigadevDiscordBot.App.Bot.Features.Commands.Unspecified
@@ -13,7 +16,12 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands.Unspecified
         private readonly IServiceProvider _serviceProvider;
 
         public GetHostedServicesCommand(IServiceProvider serviceProvider) 
-            : base("services", "Currently working services", "t!services", false)
+            : base(
+                "services", 
+                "Currently working services", 
+                "t!services", 
+                false,
+                GuildPermission.Administrator)
         {
             _serviceProvider = serviceProvider;
         }

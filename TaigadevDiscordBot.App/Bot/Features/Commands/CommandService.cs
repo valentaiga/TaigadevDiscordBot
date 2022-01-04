@@ -8,6 +8,7 @@ using Discord.WebSocket;
 using TaigadevDiscordBot.Core.Bot.Event.EventArgs;
 using TaigadevDiscordBot.Core.Bot.Features.Commands;
 using TaigadevDiscordBot.Core.Bot.Features.Service;
+using TaigadevDiscordBot.Core.Extensions;
 
 namespace TaigadevDiscordBot.App.Bot.Features.Commands
 {
@@ -38,6 +39,13 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands
 
             if (_textCommands.TryGetValue(textCommand, out var command))
             {
+                var userPermissions = eventArgs.User.GuildPermissions.ToList();
+                if (!userPermissions.Contains(command.RequiredPermissions))
+                {
+                    await eventArgs.Message.CommandMessageReplyAsync($"Not enough permissions to use this command, {eventArgs.User.Mention}. {command.RequiredPermissions} is required");
+                    return;
+                }
+
                 await _auditLogger.LogInformationAsync(
                     null,
                     eventArgs.Guild.Id,
@@ -48,7 +56,6 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands
                         { "Mentioned", eventArgs.Message.MentionedUsers.Count > 0 ? string.Join(", ", eventArgs.Message.MentionedUsers) : "<none>" },
                         { "Message", eventArgs.Message.Content}
                     });
-                // todo: add required permissions for commands
                 // todo: use slash with prefix instead of just prefix in chat - https://labs.discordnet.dev/guides/int_basics/application-commands/slash-commands/creating-slash-commands.html
                 await command.ExecuteAsync(eventArgs.Message, eventArgs.Guild);
             }
