@@ -81,7 +81,8 @@ namespace TaigadevDiscordBot.App.Bot
         {
             const string cookieEmote = @"🍪";
             var message = await cachedMessage.GetOrDownloadAsync();
-            if (!message.Author.IsBot 
+            if (message is not null
+                && !message.Author.IsBot 
                 && message.Author.Id != reaction.UserId
                 && reaction.Emote.Name == cookieEmote)
             {

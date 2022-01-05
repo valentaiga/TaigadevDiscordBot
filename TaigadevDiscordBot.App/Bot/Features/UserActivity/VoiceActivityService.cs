@@ -23,9 +23,14 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
             var dtNow = DateTime.UtcNow;
             var currentUserId = eventArgs.User.Id;
 
-            if (eventArgs.CurrentChannel is null || eventArgs.User.IsMuted())
+            if (eventArgs.PreviousChannel is null && eventArgs.User.IsMuted())
             {
-                ProcessLeftOrMutedUser();
+                return ValueTask.CompletedTask;
+            }
+
+            if (eventArgs.CurrentChannel is null)
+            {
+                ProcessLeftUser();
                 return ValueTask.CompletedTask;
             }
 
@@ -49,15 +54,9 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
                 return result;
             }
 
-            void ProcessLeftOrMutedUser()
+            void ProcessLeftUser()
             {
                 // finish current user activity
-                var userMuted = eventArgs.User.IsMuted();
-                if ((eventArgs.CurrentChannel ?? eventArgs.PreviousChannel) is null && userMuted)
-                {
-                    return;
-                }
-
                 var previousChannelId = eventArgs.PreviousChannel!.Id;
                 var usersInChannel = GetUsersInVoiceChannel(previousChannelId);
                 if (usersInChannel.TryRemove(currentUserId, out var activity))
