@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using TaigadevDiscordBot.Core.Bot.Event.EventArgs;
 using TaigadevDiscordBot.Core.Bot.Features.UserActivity;
+using TaigadevDiscordBot.Core.Constants;
 using TaigadevDiscordBot.Core.Database.Redis;
 
 namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
@@ -13,7 +14,6 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
     public class ClownCollectorService : IClownCollectorService
     {
         private const string CacheMasterKey = "clownsCollection";
-        private const string ClownEmote = @"🤡";
         private readonly IRedisProvider _redisProvider;
         private readonly ConcurrentQueue<string> _lastReactionKeys = new();
 
@@ -27,7 +27,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
             var lastReactedUsers = _lastReactionKeys.ToImmutableHashSet();
             var reactionKey = GetLastReactionKey();
             if (!eventArgs.Message.Author.IsBot
-                && eventArgs.Reaction.Emote.Name == ClownEmote
+                && eventArgs.Reaction.Emote.Name == Emojis.ClownEmote
                 && !lastReactedUsers.Contains(reactionKey))
             {
                 var outerKey = GetOuterKey(eventArgs.TextChannel.Guild.Id);
@@ -56,6 +56,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
             var outerKey = GetOuterKey(guildId);
             return (await _redisProvider.GetFromHashAllAsync<int>(outerKey))
                 .OrderByDescending(x => x.Value)
+                .Take(10)
                 .ToDictionary(x => ulong.Parse(x.Key), x => x.Value);
         }
 

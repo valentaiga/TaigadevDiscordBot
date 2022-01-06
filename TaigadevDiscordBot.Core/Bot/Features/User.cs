@@ -11,6 +11,7 @@ namespace TaigadevDiscordBot.Core.Bot.Features
         private User()
         {
             TotalVoiceActivity = TimeSpan.Zero;
+            Roles = new List<ulong>();
         }
 
         public User(ulong guildId, ulong userId) : this()
@@ -29,10 +30,12 @@ namespace TaigadevDiscordBot.Core.Bot.Features
 
         public int Level { get; set; }
 
-        public IReadOnlyList<ulong> Roles { get; set; } = new List<ulong>(0);
+        public IReadOnlyList<ulong> Roles { get; set; }
 
         [JsonIgnore]
         public TimeSpan TotalVoiceActivity { get; set; }
+
+        public bool LevelMigrationNotNeeded { get; set; }
 
         [JsonPropertyName("TotalVoiceActivity")]
         public string TimeInVoiceSpentString
@@ -41,7 +44,8 @@ namespace TaigadevDiscordBot.Core.Bot.Features
             set => TotalVoiceActivity = TimeSpan.TryParse(value, out var result) ? result : default;
         }
 
-        public bool LevelMigrationNotNeeded { get; set; }
+        [JsonIgnore]
+        public string Mention => $"<@{UserId}>";
 
         public string GetCacheKey()
             => GetCacheKey(GuildId, UserId);

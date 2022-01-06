@@ -64,6 +64,7 @@ namespace TaigadevDiscordBot.Extensions
                 services.AddSingleton<ICommand, HelpCommand>();
                 services.AddSingleton<ICommand, GetHostedServicesCommand>();
                 services.AddSingleton<ICommand, SetLevelCommand>();
+                services.AddSingleton<ICommand, ClownsTopCommand>();
 
                 // client
                 services.AddSingleton<DiscordSocketClient>();

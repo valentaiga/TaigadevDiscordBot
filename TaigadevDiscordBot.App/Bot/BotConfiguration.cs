@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
-
-using TaigadevDiscordBot.App.Constants;
 using TaigadevDiscordBot.Core.Bot;
 using TaigadevDiscordBot.Core.Bot.Features.Service;
+using TaigadevDiscordBot.Core.Constants;
 
 namespace TaigadevDiscordBot.App.Bot
 {
