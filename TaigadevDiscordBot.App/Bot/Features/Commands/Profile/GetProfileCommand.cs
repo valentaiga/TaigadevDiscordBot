@@ -47,7 +47,8 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands.Profile
                 .WithColor(Color.DarkRed);
 
             await message.Channel.SendAndRemoveMessageAsync(null, TimeSpan.MaxValue, embedBuilder.Build());
-            
+            await message.DeleteAsync();
+
             string GetFormattedVoiceTime() => $"{user.TotalVoiceActivity.Days} days, {user.TotalVoiceActivity.Hours} hours, {user.TotalVoiceActivity.Minutes} minutes";
         }
     }

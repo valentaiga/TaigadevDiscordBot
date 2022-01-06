@@ -71,7 +71,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserExperience
                 }
                 
                 // migration from jupiter bot activity
-                await TryMigrateUserLevelAsync(user, userId, guildId);
+                TryMigrateUserLevel(user, userId, guildId);
 
                 // uncomment if experience should be removed after level-up
                 //var requiredExperience = _levels[user.Level++];
@@ -80,41 +80,14 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserExperience
                 var guild = _client.GetGuild(guildId);
                 var dsUser = guild.GetUser(userId);
                 user.Level++;
-                
-                var nextLevelRole = await guild.Roles.ToAsyncEnumerable().FirstOrDefaultAsync(x => x.Name.StartsWith($"{user.Level}."));
 
-                // next level has no role
-                if (nextLevelRole is null)
-                {
-                    _logger.LogInformation($"Level '{user.Level}' role does not exist. User '{user.Nickname}' leveled up anyway");
-                    return;
-                }
+                await UpdateRolesAsync(dsUser, user);
 
-                var levelRoles = await dsUser.Roles.ToAsyncEnumerable()
-                    .Where(x => _roleLevelRegex.IsMatch(x.Name))
-                    .Select(x => x.Id)
-                    .Except(new[] {nextLevelRole.Id}.ToAsyncEnumerable())
-                    .ToArrayAsync();
-
-#if DEBUG
-                _logger.LogDebug($"User '{dsUser.Nickname}' role '{nextLevelRole.Name}' added. (just log, nothing happen)");
-                if (levelRoles.Length > 0)
-                {
-                    _logger.LogDebug($"User '{dsUser.Nickname}' roles removed: ['{string.Join(", ", levelRoles)}'] removed. (just log, nothing happen)");
-                }
-#else
-                await dsUser.AddRoleAsync(nextLevelRole.Id);
-                if (levelRoles.Length > 0)
-                {
-                    await dsUser.RemoveRolesAsync(levelRoles);
-                }
-#endif
-
-                _logger.LogInformation($"User '{dsUser.Nickname}' with id '{dsUser.Id}' level updated to '{nextLevelRole.Name}'");
+                _logger.LogInformation($"User '{dsUser.Nickname}' with id '{dsUser.Id}' level updated to '{user.Level}'");
             });
         }
 
-        private async Task TryMigrateUserLevelAsync(User user, ulong userId, ulong guildId)
+        private void TryMigrateUserLevel(User user, ulong userId, ulong guildId)
         {
             if (user.LevelMigrationNotNeeded)
             {
@@ -124,20 +97,73 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserExperience
             var guild = _client.GetGuild(guildId);
             var dsUser = guild.GetUser(userId);
 
-            var (level, role) = await dsUser.Roles.ToAsyncEnumerable()
+            var (level, role) = dsUser.Roles
                 .Where(x => _roleLevelRegex.IsMatch(x.Name))
                 .Select(x => (int.Parse(x.Name.Split(".")[0]), x))
                 .OrderByDescending(x => x.Item1)
-                .FirstOrDefaultAsync();
+                .FirstOrDefault();
 
             user.LevelMigrationNotNeeded = true;
             if (role is null || level == 0 || level == user.Level)
             {
                 return;
+
             }
 
             user.Level = level;
             user.Experience = _levels[user.Level--];
+        }
+
+        public async Task<User> SetUserLevelAsync(SocketGuildUser dsUser, int level)
+        {
+            if (!_levels.TryGetValue(level, out var levelExperience))
+            {
+                return null;
+            }
+
+            var user = await _userRepository.UpdateUserAsync(dsUser.Id, dsUser.Guild.Id, user =>
+            {
+                user.Level = level;
+                user.Experience = levelExperience;
+                return Task.CompletedTask;
+            });
+
+            await UpdateRolesAsync(dsUser, user);
+            return user;
+        }
+
+        private async Task UpdateRolesAsync(SocketGuildUser dsUser, User user)
+        {
+            var guild = dsUser.Guild;
+            var nextLevelRole = guild.Roles.FirstOrDefault(x => x.Name.StartsWith($"{user.Level}."));
+
+            // next level has no role
+            if (nextLevelRole is null)
+            {
+                _logger.LogInformation($"Level '{user.Level}' role does not exist. User '{user.Nickname}' leveled up anyway");
+                return;
+            }
+
+            var removeLevelRoles = dsUser.Roles
+                .Where(x => _roleLevelRegex.IsMatch(x.Name))
+                .Select(x => x.Id)
+                .Except(new[] { nextLevelRole.Id })
+                .ToArray();
+
+#if DEBUG
+            _logger.LogDebug($"User '{dsUser.Nickname}' role '{nextLevelRole.Name}' added. (just log, nothing happen)");
+            if (removeLevelRoles.Length > 0)
+            {
+                _logger.LogDebug($"User '{dsUser.Nickname}' roles removed: ['{string.Join(", ", removeLevelRoles)}'] removed. (just log, nothing happen)");
+            }
+#else
+            await dsUser.AddRoleAsync(nextLevelRole.Id);
+            if (removeLevelRoles.Length > 0)
+            {
+                await dsUser.RemoveRolesAsync(removeLevelRoles);
+            }
+            _logger.LogInformation($"User '{dsUser.Username}' roles updated: [{string.Join(", ", removeLevelRoles)}] removed, {nextLevelRole.Name} added");
+#endif
         }
     }
 }
