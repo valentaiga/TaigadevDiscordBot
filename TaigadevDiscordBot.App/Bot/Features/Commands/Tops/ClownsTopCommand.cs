@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 
 using Discord;
 using Discord.WebSocket;
+
 using TaigadevDiscordBot.Core.Bot;
 using TaigadevDiscordBot.Core.Bot.Features;
 using TaigadevDiscordBot.Core.Bot.Features.Commands;
@@ -11,7 +12,7 @@ using TaigadevDiscordBot.Core.Constants;
 using TaigadevDiscordBot.Core.Extensions;
 using TaigadevDiscordBot.Core.Helpers;
 
-namespace TaigadevDiscordBot.App.Bot.Features.Commands.Profile
+namespace TaigadevDiscordBot.App.Bot.Features.Commands.Tops
 {
     public class ClownsTopCommand : CommandBase
     {
@@ -19,11 +20,14 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands.Profile
         private readonly IUserRepository _userRepository;
         private readonly IBotConfiguration _botConfiguration;
 
-        public ClownsTopCommand(IClownCollectorService clownCollectorService, IUserRepository userRepository, IBotConfiguration botConfiguration) 
+        public ClownsTopCommand(
+            IClownCollectorService clownCollectorService, 
+            IUserRepository userRepository, 
+            IBotConfiguration botConfiguration) 
             : base(
                 "topclowns", 
                 "Get a current guild clown top", 
-                "t!topclowns", 
+                $"{botConfiguration.Prefix}topclowns", 
                 false, 
                 GuildPermission.SendMessages)
         {

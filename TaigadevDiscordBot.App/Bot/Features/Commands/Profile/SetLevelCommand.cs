@@ -7,6 +7,7 @@ using Discord.WebSocket;
 
 using Microsoft.Extensions.Logging;
 
+using TaigadevDiscordBot.Core.Bot;
 using TaigadevDiscordBot.Core.Bot.Features;
 using TaigadevDiscordBot.Core.Bot.Features.Commands;
 using TaigadevDiscordBot.Core.Bot.Features.Service;
@@ -22,11 +23,16 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands.Profile
         private readonly ILogger<SetLevelCommand> _logger;
         private readonly IAuditLogger _auditLogger;
 
-        public SetLevelCommand(IUserRepository userRepository, IUserLevelService userLevelService, ILogger<SetLevelCommand> logger, IAuditLogger auditLogger)
+        public SetLevelCommand(
+            IBotConfiguration botConfiguration,
+            IUserRepository userRepository, 
+            IUserLevelService userLevelService, 
+            ILogger<SetLevelCommand> logger, 
+            IAuditLogger auditLogger)
             : base(
                 "setlevel", 
                 "Set leve of user", 
-                "t!setlevel @mention 0", 
+                $"{botConfiguration.Prefix}setlevel @mention 0", 
                 true, 
                 GuildPermission.Administrator)
         {

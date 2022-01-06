@@ -26,7 +26,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands.Profile
             : base(
                 "profile", 
                 "Get profile", 
-                $"t!profile @mention", 
+                $"{botConfiguration.Prefix}profile @mention", 
                 false,
                 GuildPermission.SendMessages)
         {

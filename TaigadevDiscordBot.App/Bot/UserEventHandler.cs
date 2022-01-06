@@ -80,7 +80,6 @@ namespace TaigadevDiscordBot.App.Bot
 
         public async Task OnReactionAdded(Cacheable<IUserMessage, ulong> cachedMessage, Cacheable<IMessageChannel, ulong> cachedTextChannel, SocketReaction reaction)
         {
-            const string cookieEmote = @"🍪";
             var message = await cachedMessage.GetOrDownloadAsync();
             var textChannel = await cachedTextChannel.GetOrDownloadAsync() as SocketTextChannel;
             if (message is not null

@@ -10,6 +10,7 @@ namespace TaigadevDiscordBot.Core.Bot
     {
         string Token { get; }
         string AdminId { get; }
+        string Prefix { get; }
 
         void SetSelfUser(SocketSelfUser selfUser);
 

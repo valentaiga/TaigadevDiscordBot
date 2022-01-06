@@ -14,6 +14,7 @@ namespace TaigadevDiscordBot.App.Bot
         {
             AdminId = configuration[ConfigurationKeys.Discord.AdminId];
             Token = Environment.GetEnvironmentVariable(ConfigurationKeys.Discord.Token);
+            Prefix = configuration[ConfigurationKeys.Discord.Prefix];
             ServiceCategoryName = configuration[ConfigurationKeys.Discord.ServiceCategoryName];
             WorkOnServerIds = configuration.GetSection(ConfigurationKeys.Discord.WorkServerIds).Get<List<ulong>>();
             ServiceChannels = configuration.GetSection(ConfigurationKeys.Discord.ServiceChannels).Get<List<GuildChannel>>();
@@ -23,7 +24,8 @@ namespace TaigadevDiscordBot.App.Bot
 
         public string AdminId { get; }
         public string Token { get; }
-        
+        public string Prefix { get; }
+
         public IList<ulong> WorkOnServerIds { get; }
         public string ServiceCategoryName { get; }
         public List<GuildChannel> ServiceChannels { get; }
