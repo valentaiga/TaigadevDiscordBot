@@ -7,7 +7,5 @@ namespace TaigadevDiscordBot.Core.Bot.Features.UserActivity
     public interface ITextActivityService
     {
         ValueTask UpdateUserTextActivityAsync(NewTextMessageEventArgs eventArgs);
-
-        ValueTask IncrementUserCookiesAsync(ulong userId, ulong guildId);
     }
 }

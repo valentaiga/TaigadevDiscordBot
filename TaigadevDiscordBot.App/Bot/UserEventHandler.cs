@@ -16,26 +16,27 @@ namespace TaigadevDiscordBot.App.Bot
 {
     public class UserEventHandler : IUserEventHandler
     {
-        private readonly ITextActivityService _textActivityService;
         private readonly IAuditLogger _auditLogger;
         private readonly ILogger<UserEventHandler> _logger;
 
         private event Func<VoiceStatusUpdatedEventArgs, ValueTask> VoiceStatusUpdatedHandler;
         private event Func<NewTextMessageEventArgs, ValueTask> NewTextMessageHandler;
+        private event Func<ReactionAddedEventArgs, ValueTask> ReactionAddedHandler;
 
         public UserEventHandler(
             IVoiceActivityService voiceActivityService, 
-            ITextActivityService textActivityService, 
+            ITextActivityService textActivityService,
+            IClownCollectorService clownCollectorService,
             ICommandService commandService,
             IAuditLogger auditLogger,
             ILogger<UserEventHandler> logger)
         {
-            _textActivityService = textActivityService;
             _auditLogger = auditLogger;
             _logger = logger;
             VoiceStatusUpdatedHandler += voiceActivityService.UpdateUserVoiceActivityAsync;
             NewTextMessageHandler += textActivityService.UpdateUserTextActivityAsync;
             NewTextMessageHandler += commandService.ExecuteCommandAsync;
+            ReactionAddedHandler += clownCollectorService.IncrementUpdateUserClowns;
         }
 
         public async Task OnUserVoiceStateUpdated(SocketUser user, SocketVoiceState oldVoiceState, SocketVoiceState newVoiceState)
@@ -81,13 +82,20 @@ namespace TaigadevDiscordBot.App.Bot
         {
             const string cookieEmote = @"🍪";
             var message = await cachedMessage.GetOrDownloadAsync();
+            var textChannel = await cachedTextChannel.GetOrDownloadAsync() as SocketTextChannel;
             if (message is not null
-                && !message.Author.IsBot 
-                && message.Author.Id != reaction.UserId
-                && reaction.Emote.Name == cookieEmote)
+                && textChannel is not null)
             {
-                var textChannel = await cachedTextChannel.GetOrDownloadAsync() as SocketTextChannel;
-                await _textActivityService.IncrementUserCookiesAsync(message.Author.Id, textChannel!.Guild.Id);
+                var eventArgs = new ReactionAddedEventArgs(message, textChannel, reaction);
+                try
+                {
+                    await ReactionAddedHandler(eventArgs);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Error during message processing: {ex}");
+                    await _auditLogger.LogErrorAsync(ex, textChannel.Guild.Id);
+                }
             }
         }
     }

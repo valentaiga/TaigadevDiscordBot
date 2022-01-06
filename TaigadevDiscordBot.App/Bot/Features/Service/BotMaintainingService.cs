@@ -25,13 +25,13 @@ namespace TaigadevDiscordBot.App.Bot.Features.Service
             var activities = _voiceActivityService.CollectActivities().ToArray();
             if (activities.Length > 0)
             {
-                await _redisProvider.AddToListAsync(CacheKey, activities);
+                await _redisProvider.AddToHashAsync(CacheKey, activities);
             }
         }
 
         public async Task ProcessSavedUsersActivitiesAsync()
         {
-            var activitiesList = await _redisProvider.GetListAsync<UserVoiceActivity>(CacheKey);
+            var activitiesList = await _redisProvider.PopSetAsync<UserVoiceActivity>(CacheKey);
             Parallel.ForEach(activitiesList, activity =>
             {
                 _voiceActivityService.AddActivity(activity);

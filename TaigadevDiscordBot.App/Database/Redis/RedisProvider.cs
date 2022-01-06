@@ -41,24 +41,38 @@ namespace TaigadevDiscordBot.App.Database.Redis
         public async Task SaveAsync<T>(string cacheKey, T value)
         {
             var json = SerializeValue(value);
-            var db = GetDatabase();
-            await db.StringSetAsync(AdjustProjectPrefix(cacheKey), json);
+            await Database.StringSetAsync(AdjustProjectPrefix(cacheKey), json);
         }
 
-        public Task AddToListAsync<T>(string cacheKey, IEnumerable<T> values)
+        public async Task<T> GetFromHashAsync<T>(string outerKey, string innerKey)
         {
-            var db = GetDatabase();
+            var result = await Database.HashGetAsync(AdjustProjectPrefix(outerKey), innerKey);
+            return DeserializeValue<T>(result);
+        }
+
+        public async Task<Dictionary<string, TValue>> GetFromHashAllAsync<TValue>(string outerKey)
+        {
+            var result = await Database.HashGetAllAsync(AdjustProjectPrefix(outerKey));
+            return result.ToDictionary(x => x.Name.ToString(), x => DeserializeValue<TValue>(x.Value));
+        }
+
+        public Task AddToHashAsync<T>(string outerKey, string innerKey, T value)
+        { 
+            return Database.HashSetAsync(AdjustProjectPrefix(outerKey), innerKey, SerializeValue(value));
+        }
+
+        public Task AddToHashAsync<T>(string cacheKey, IEnumerable<T> values)
+        {
             var redisValues = values.Select(x => new RedisValue(SerializeValue(x))).ToArray();
-            return db.SetAddAsync(cacheKey, redisValues);
+            return Database.SetAddAsync(cacheKey, redisValues);
         }
 
-        public async Task<IList<T>> GetListAsync<T>(string cacheKey)
+        public async Task<IList<T>> PopSetAsync<T>(string cacheKey)
         {
-            var db = GetDatabase();
             var result = new List<T>();
             RedisValue value;
             
-            while ((value = await db.SetPopAsync(cacheKey)).HasValue)
+            while ((value = await Database.SetPopAsync(cacheKey)).HasValue)
             {
                 result.Add(DeserializeValue<T>(value));
             }
@@ -68,8 +82,7 @@ namespace TaigadevDiscordBot.App.Database.Redis
 
         public async Task<T> GetAsync<T>(string cacheKey)
         {
-            var db = GetDatabase();
-            var result = await db.StringGetAsync(AdjustProjectPrefix(cacheKey));
+            var result = await Database.StringGetAsync(AdjustProjectPrefix(cacheKey));
             if (result.HasValue)
             {
                 return DeserializeValue<T>(result);
@@ -78,14 +91,13 @@ namespace TaigadevDiscordBot.App.Database.Redis
             return default;
         }
 
-        public async Task<T[]> GetAsync<T>(IAsyncEnumerable<string> cacheKeys)
+        public async Task<T[]> GetAsync<T>(IEnumerable<string> cacheKeys)
         {
-            var db = GetDatabase();
-            var values = await db.StringGetAsync(await cacheKeys.Select(x => (RedisKey)AdjustProjectPrefix(x)).ToArrayAsync());
-            return await values.ToAsyncEnumerable()
+            var values = await Database.StringGetAsync(cacheKeys.Select(x => (RedisKey)AdjustProjectPrefix(x)).ToArray());
+            return values
                 .Where(x => x.HasValue)
                 .Select(x => DeserializeValue<T>(x))
-                .ToArrayAsync();
+                .ToArray();
         }
 
         public void Dispose()
@@ -93,12 +105,12 @@ namespace TaigadevDiscordBot.App.Database.Redis
             _multiplexer?.Dispose();
         }
 
-        private IDatabase GetDatabase() => _multiplexer.GetDatabase();
+        private IDatabase Database => _multiplexer.GetDatabase();
 
         private string AdjustProjectPrefix(string cacheKey) => $"{_prefix}:{cacheKey}";
 
         private string SerializeValue<T>(T value) => JsonSerializer.Serialize(value, _jsonSerializerOptions);
 
-        private T DeserializeValue<T>(string json) => JsonSerializer.Deserialize<T>(json, _jsonSerializerOptions);
+        private T DeserializeValue<T>(string json) => json is not null ? JsonSerializer.Deserialize<T>(json, _jsonSerializerOptions) : default;
     }
 }
