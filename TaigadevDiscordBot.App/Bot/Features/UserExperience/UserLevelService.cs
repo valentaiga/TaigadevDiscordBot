@@ -83,7 +83,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserExperience
 
                 await UpdateRolesAsync(dsUser, user);
 
-                _logger.LogInformation($"User '{dsUser.Nickname}' with id '{dsUser.Id}' level updated to '{user.Level}'");
+                _logger.LogInformation($"User '{dsUser.Nickname ?? dsUser.Username}' with id '{dsUser.Id}' level updated to '{user.Level}'");
             });
         }
 
@@ -140,7 +140,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserExperience
             // next level has no role
             if (nextLevelRole is null)
             {
-                _logger.LogInformation($"Level '{user.Level}' role does not exist. User '{user.Nickname}' leveled up anyway");
+                _logger.LogInformation($"Level '{user.Level}' role does not exist. User '{dsUser.Nickname ?? dsUser.Username}' leveled up anyway");
                 return;
             }
 
@@ -151,10 +151,10 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserExperience
                 .ToArray();
 
 #if DEBUG
-            _logger.LogDebug($"User '{dsUser.Nickname}' role '{nextLevelRole.Name}' added. (just log, nothing happen)");
+            _logger.LogDebug($"User '{dsUser.Nickname ?? dsUser.Username}' role '{nextLevelRole.Name}' added. (just log, nothing happen)");
             if (removeLevelRoles.Length > 0)
             {
-                _logger.LogDebug($"User '{dsUser.Nickname}' roles removed: ['{string.Join(", ", removeLevelRoles)}'] removed. (just log, nothing happen)");
+                _logger.LogDebug($"User '{dsUser.Nickname ?? dsUser.Username}' roles removed: ['{string.Join(", ", removeLevelRoles)}'] removed. (just log, nothing happen)");
             }
 #else
             await dsUser.AddRoleAsync(nextLevelRole.Id);

@@ -6,7 +6,7 @@ using Discord.WebSocket;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-
+using TaigadevDiscordBot.Core.Bot.Features.Commands;
 using TaigadevDiscordBot.Core.Extensions;
 
 namespace TaigadevDiscordBot.App.Bot.Features.Commands.Unspecified

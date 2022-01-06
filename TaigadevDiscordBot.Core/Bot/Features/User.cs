@@ -29,8 +29,6 @@ namespace TaigadevDiscordBot.Core.Bot.Features
 
         public int Level { get; set; }
 
-        public int CookiesCollected { get; set; }
-
         public IReadOnlyList<ulong> Roles { get; set; } = new List<ulong>(0);
 
         [JsonIgnore]

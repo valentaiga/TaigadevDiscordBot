@@ -1,10 +1,9 @@
 ﻿using System.Threading.Tasks;
+
 using Discord;
 using Discord.WebSocket;
 
-using TaigadevDiscordBot.Core.Bot.Features.Commands;
-
-namespace TaigadevDiscordBot.App.Bot.Features.Commands
+namespace TaigadevDiscordBot.Core.Bot.Features.Commands
 {
     public abstract class CommandBase : ICommand
     {

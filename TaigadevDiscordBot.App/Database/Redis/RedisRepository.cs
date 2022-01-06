@@ -20,7 +20,7 @@ namespace TaigadevDiscordBot.App.Database.Redis
             return _redisProvider.GetAsync<T>(cacheKey);
         }
 
-        public Task<T[]> GetAsync<T>(IAsyncEnumerable<string> cacheKeys) where T : IRedisEntity
+        public Task<T[]> GetAsync<T>(IEnumerable<string> cacheKeys) where T : IRedisEntity
         {
             return _redisProvider.GetAsync<T>(cacheKeys);
         }

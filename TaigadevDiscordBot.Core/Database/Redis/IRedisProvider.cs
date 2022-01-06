@@ -9,10 +9,16 @@ namespace TaigadevDiscordBot.Core.Database.Redis
 
         Task<T> GetAsync<T>(string cacheKey);
 
-        Task<T[]> GetAsync<T>(IAsyncEnumerable<string> cacheKeys);
+        Task<T[]> GetAsync<T>(IEnumerable<string> cacheKeys);
 
-        Task AddToListAsync<T>(string cacheKey, IEnumerable<T> values);
+        Task AddToHashAsync<T>(string outerKey, string innerKey, T value);
 
-        Task<IList<T>> GetListAsync<T>(string cacheKey);
+        Task<Dictionary<string, TValue>> GetFromHashAllAsync<TValue>(string outerKey);
+
+        Task<T> GetFromHashAsync<T>(string outerKey, string innerKey);
+
+        Task AddToHashAsync<T>(string cacheKey, IEnumerable<T> values);
+
+        Task<IList<T>> PopSetAsync<T>(string cacheKey);
     }
 }

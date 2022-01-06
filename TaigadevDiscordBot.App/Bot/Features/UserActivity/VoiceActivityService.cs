@@ -87,7 +87,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
                 }
 
                 // start new current user activity
-                var activity = new UserVoiceActivity(eventArgs.User.Id, eventArgs.Guild.Id, eventArgs.User.Nickname, eventArgs.User.Roles);
+                var activity = new UserVoiceActivity(eventArgs.User.Id, eventArgs.Guild.Id, eventArgs.User.Nickname ?? eventArgs.User.Username, eventArgs.User.Roles);
                 usersInChannel.TryAdd(currentUserId, activity);
             }
 
@@ -120,7 +120,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
                 }
 
                 // update new voice value
-                activity ??= new UserVoiceActivity(eventArgs.User.Id, eventArgs.Guild.Id, eventArgs.User.Nickname, eventArgs.User.Roles);
+                activity ??= new UserVoiceActivity(eventArgs.User.Id, eventArgs.Guild.Id, eventArgs.User.Nickname ?? eventArgs.User.Username, eventArgs.User.Roles);
                 usersInChannel = GetUsersInVoiceChannel(currentChannelId);
                 if (usersInChannel.Count == 1)
                 {

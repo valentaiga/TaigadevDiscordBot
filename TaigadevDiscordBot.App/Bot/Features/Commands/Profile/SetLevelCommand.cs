@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 using Discord;
 using Discord.WebSocket;
-
+using TaigadevDiscordBot.Core.Bot.Features.Commands;
 using TaigadevDiscordBot.Core.Bot.Features.UserExperience;
 using TaigadevDiscordBot.Core.Extensions;
 

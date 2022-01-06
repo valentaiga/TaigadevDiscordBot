@@ -33,7 +33,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
             {
                 await _userRepository.UpdateUserAsync(eventArgs.User.Id, eventArgs.Guild.Id, user =>
                 {
-                    user.Nickname = eventArgs.User.Nickname;
+                    user.Nickname = eventArgs.User.Nickname ?? eventArgs.User.Username;
                     user.Roles = eventArgs.User.Roles.Where(x => !x.IsEveryone).Select(x => x.Id).ToList();
                     user.Experience += _experienceCalculationService.CalculateChatMessageExperience(1);
                     return Task.CompletedTask;
@@ -43,15 +43,6 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
             }
 
             _channelsActivity.TryAdd(key, eventArgs.User.Id);
-        }
-
-        public async ValueTask IncrementUserCookiesAsync(ulong userId, ulong guildId)
-        {
-            await _userRepository.UpdateUserAsync(userId, guildId, user =>
-            {
-                user.CookiesCollected++;
-                return Task.CompletedTask;
-            });
         }
     }
 }
