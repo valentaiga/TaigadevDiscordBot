@@ -46,16 +46,20 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands
                     return;
                 }
 
-                await _auditLogger.LogInformationAsync(
-                    null,
-                    eventArgs.Guild.Id,
-                    new Dictionary<string, string>
-                    {
-                        { "Author", eventArgs.User.Mention },
-                        { "Command", textCommand },
-                        { "Mentioned", eventArgs.Message.MentionedUsers.Count > 0 ? string.Join(", ", eventArgs.Message.MentionedUsers) : "<none>" },
-                        { "Message", eventArgs.Message.Content}
-                    });
+                if (command.AuditCommand)
+                {
+                    await _auditLogger.LogInformationAsync(
+                        null,
+                        eventArgs.Guild.Id,
+                        new Dictionary<string, string>
+                        {
+                            { "Author", eventArgs.User.Mention },
+                            { "Command", textCommand },
+                            { "Mentioned", eventArgs.Message.MentionedUsers.Count > 0 ? string.Join(", ", eventArgs.Message.MentionedUsers) : "<none>" },
+                            { "Message", eventArgs.Message.Content}
+                        });
+                }
+                
                 // todo: use slash with prefix instead of just prefix in chat - https://labs.discordnet.dev/guides/int_basics/application-commands/slash-commands/creating-slash-commands.html
                 await command.ExecuteAsync(eventArgs.Message, eventArgs.Guild);
             }
