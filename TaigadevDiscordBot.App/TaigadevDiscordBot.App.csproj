@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Constants\" />
+    <Folder Include="Bot\Features\Commands\Tops\" />
   </ItemGroup>
 
 </Project>

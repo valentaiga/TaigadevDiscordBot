@@ -1,4 +1,4 @@
-﻿namespace TaigadevDiscordBot.App.Constants
+﻿namespace TaigadevDiscordBot.Core.Constants
 {
     public static class ConfigurationKeys
     {

@@ -35,7 +35,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands.Unspecified
                 embedBuilder.AddField(command.Command, command.UsageExample);
             }
 
-            return message.CommandMessageReplyAsync(message.Author.Mention, embedBuilder.Build());
+            return message.CommandMessageReplyAsync(message.Author.Mention, embedBuilder.Build(), TimeSpan.MaxValue);
         }
     }
 }

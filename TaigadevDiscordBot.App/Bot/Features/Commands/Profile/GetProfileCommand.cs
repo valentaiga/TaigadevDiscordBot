@@ -51,11 +51,9 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands.Profile
                 .AddField("Total voice time", GetFormattedVoiceTime())
                 .AddField("On server since", dsUser.JoinedAt!.Value.Date.ToString("Y"))
                 .WithThumbnailUrl(dsUser.GetAvatarUrl(size: 80))
-                .WithFooter($"Powered by TaigaBot", _botConfiguration.SelfUser.GetAvatarUrl(size: 16))
-                .WithColor(Color.DarkRed);
+                .AdjustBotFields(_botConfiguration, Color.DarkRed);
 
             await message.Channel.SendAndRemoveMessageAsync(null, TimeSpan.MaxValue, embedBuilder.Build());
-            await message.DeleteAsync();
 
             string GetFormattedVoiceTime() => $"{user.TotalVoiceActivity.Days} days, {user.TotalVoiceActivity.Hours} hours, {user.TotalVoiceActivity.Minutes} minutes";
         }

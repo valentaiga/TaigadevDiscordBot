@@ -1,8 +1,7 @@
 ﻿using System;
 
 using Microsoft.Extensions.Configuration;
-
-using TaigadevDiscordBot.App.Constants;
+using TaigadevDiscordBot.Core.Constants;
 using TaigadevDiscordBot.Core.Database.Redis;
 
 namespace TaigadevDiscordBot.App.Database.Redis
