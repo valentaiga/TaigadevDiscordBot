@@ -6,6 +6,7 @@ using Discord.WebSocket;
 
 using Microsoft.Extensions.DependencyInjection;
 
+using TaigadevDiscordBot.Core.Bot;
 using TaigadevDiscordBot.Core.Bot.Features.Commands;
 using TaigadevDiscordBot.Core.Extensions;
 
@@ -15,11 +16,11 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands.Unspecified
     {
         private readonly IServiceProvider _serviceProvider;
 
-        public HelpCommand(IServiceProvider serviceProvider)
+        public HelpCommand(IBotConfiguration botConfiguration, IServiceProvider serviceProvider)
             : base(
                 "help", 
                 "Get list of all commands", 
-                "t!help", 
+                $"{botConfiguration.Prefix}help", 
                 false,
                 GuildPermission.SendMessages)
         {
@@ -35,7 +36,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands.Unspecified
                 embedBuilder.AddField(command.Command, command.UsageExample);
             }
 
-            return message.CommandMessageReplyAsync(message.Author.Mention, embedBuilder.Build(), TimeSpan.MaxValue);
+            return message.CommandMessageReplyAsync(message.Author.Mention, embedBuilder.Build());
         }
     }
 }

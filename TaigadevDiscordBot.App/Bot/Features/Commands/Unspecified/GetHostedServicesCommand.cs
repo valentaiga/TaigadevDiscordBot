@@ -6,6 +6,8 @@ using Discord.WebSocket;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+
+using TaigadevDiscordBot.Core.Bot;
 using TaigadevDiscordBot.Core.Bot.Features.Commands;
 using TaigadevDiscordBot.Core.Extensions;
 
@@ -15,11 +17,11 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands.Unspecified
     {
         private readonly IServiceProvider _serviceProvider;
 
-        public GetHostedServicesCommand(IServiceProvider serviceProvider) 
+        public GetHostedServicesCommand(IBotConfiguration botConfiguration, IServiceProvider serviceProvider) 
             : base(
                 "services", 
                 "Currently working services", 
-                "t!services", 
+                $"{botConfiguration.Prefix}services", 
                 false,
                 GuildPermission.Administrator)
         {

@@ -2,9 +2,11 @@
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Discord;
 using Discord.WebSocket;
 
+using TaigadevDiscordBot.Core.Bot;
 using TaigadevDiscordBot.Core.Bot.Features.Commands;
 using TaigadevDiscordBot.Core.Extensions;
 
@@ -14,11 +16,11 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands.Fun
     {
         private readonly Random _random = new();
 
-        public ChaosVoiceMoveCommand()
+        public ChaosVoiceMoveCommand(IBotConfiguration botConfiguration)
             : base(
                 "chaosmove", 
                 "Chaotic user movement between voice channels", 
-                $"t!chaosmove @mention", 
+                $"{botConfiguration.Prefix}chaosmove @mention", 
                 true,
                 GuildPermission.MoveMembers)
         {

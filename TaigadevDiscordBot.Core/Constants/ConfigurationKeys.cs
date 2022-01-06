@@ -6,6 +6,7 @@
         {
             public const string AdminId = "Discord:AdminId";
             public const string Token = "Discord:Token";
+            public const string Prefix = "Discord:Prefix";
             public const string WorkServerIds = "Discord:WorkServerIds";
             public const string ServiceCategoryName = "Discord:ServiceCategoryName";
             public const string ServiceChannels = "Discord:ServiceChannels";

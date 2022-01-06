@@ -12,6 +12,7 @@ using TaigadevDiscordBot.App.Bot.Features;
 using TaigadevDiscordBot.App.Bot.Features.Commands;
 using TaigadevDiscordBot.App.Bot.Features.Commands.Fun;
 using TaigadevDiscordBot.App.Bot.Features.Commands.Profile;
+using TaigadevDiscordBot.App.Bot.Features.Commands.Tops;
 using TaigadevDiscordBot.App.Bot.Features.Commands.Unspecified;
 using TaigadevDiscordBot.App.Bot.Features.Service;
 using TaigadevDiscordBot.App.Bot.Features.UserActivity;

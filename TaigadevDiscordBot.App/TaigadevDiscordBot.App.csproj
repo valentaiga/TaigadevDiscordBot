@@ -18,8 +18,4 @@
     <ProjectReference Include="..\TaigadevDiscordBot.Core\TaigadevDiscordBot.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Bot\Features\Commands\Tops\" />
-  </ItemGroup>
-
 </Project>
