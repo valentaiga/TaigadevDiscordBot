@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 
 using TaigadevDiscordBot.Core.Bot.Event;
 using TaigadevDiscordBot.Core.Bot.Event.EventArgs;
+using TaigadevDiscordBot.Core.Bot.Features.Collectors;
 using TaigadevDiscordBot.Core.Bot.Features.Commands;
 using TaigadevDiscordBot.Core.Bot.Features.Service;
 using TaigadevDiscordBot.Core.Bot.Features.UserActivity;
@@ -26,7 +27,7 @@ namespace TaigadevDiscordBot.App.Bot
         public UserEventHandler(
             IVoiceActivityService voiceActivityService, 
             ITextActivityService textActivityService,
-            IClownCollectorService clownCollectorService,
+            IEmojiCounterService emojiCounterService,
             ICommandService commandService,
             IAuditLogger auditLogger,
             ILogger<UserEventHandler> logger)
@@ -36,7 +37,7 @@ namespace TaigadevDiscordBot.App.Bot
             VoiceStatusUpdatedHandler += voiceActivityService.UpdateUserVoiceActivityAsync;
             NewTextMessageHandler += textActivityService.UpdateUserTextActivityAsync;
             NewTextMessageHandler += commandService.ExecuteCommandAsync;
-            ReactionAddedHandler += clownCollectorService.IncrementUpdateUserClowns;
+            ReactionAddedHandler += emojiCounterService.IncrementUserEmojiCount;
         }
 
         public async Task OnUserVoiceStateUpdated(SocketUser user, SocketVoiceState oldVoiceState, SocketVoiceState newVoiceState)

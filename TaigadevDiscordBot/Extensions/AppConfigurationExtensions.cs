@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 
 using TaigadevDiscordBot.App.Bot;
 using TaigadevDiscordBot.App.Bot.Features;
+using TaigadevDiscordBot.App.Bot.Features.Collectors;
 using TaigadevDiscordBot.App.Bot.Features.Commands;
 using TaigadevDiscordBot.App.Bot.Features.Commands.Fun;
 using TaigadevDiscordBot.App.Bot.Features.Commands.Profile;
@@ -22,6 +23,7 @@ using TaigadevDiscordBot.App.Initialization;
 using TaigadevDiscordBot.Core.Bot;
 using TaigadevDiscordBot.Core.Bot.Event;
 using TaigadevDiscordBot.Core.Bot.Features;
+using TaigadevDiscordBot.Core.Bot.Features.Collectors;
 using TaigadevDiscordBot.Core.Bot.Features.Commands;
 using TaigadevDiscordBot.Core.Bot.Features.Service;
 using TaigadevDiscordBot.Core.Bot.Features.UserActivity;
@@ -51,7 +53,7 @@ namespace TaigadevDiscordBot.Extensions
                 services.AddSingleton<IVoiceActivityService, VoiceActivityService>();
                 services.AddSingleton<ITextActivityService, TextActivityService>();
                 services.AddSingleton<IBotMaintainingService, BotMaintainingService>();
-                services.AddSingleton<IClownCollectorService, ClownCollectorService>();
+                services.AddSingleton<IEmojiCounterService, EmojiCounterService>();
                 services.AddSingleton<IAuditLogger, AuditLogger>();
 
                 // initialization modules
@@ -66,6 +68,7 @@ namespace TaigadevDiscordBot.Extensions
                 services.AddSingleton<ICommand, GetHostedServicesCommand>();
                 services.AddSingleton<ICommand, SetLevelCommand>();
                 services.AddSingleton<ICommand, ClownsTopCommand>();
+                services.AddSingleton<ICommand, CookiesTopCommand>();
 
                 // client
                 services.AddSingleton<DiscordSocketClient>();
