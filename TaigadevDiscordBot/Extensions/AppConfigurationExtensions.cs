@@ -54,6 +54,7 @@ namespace TaigadevDiscordBot.Extensions
                 services.AddSingleton<ITextActivityService, TextActivityService>();
                 services.AddSingleton<IBotMaintainingService, BotMaintainingService>();
                 services.AddSingleton<IEmojiCounterService, EmojiCounterService>();
+                services.AddSingleton<IGuildRepository, GuildRepository>();
                 services.AddSingleton<IAuditLogger, AuditLogger>();
 
                 // initialization modules
