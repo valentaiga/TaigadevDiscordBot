@@ -10,10 +10,13 @@ namespace TaigadevDiscordBot.Core.Bot.Features
         [JsonConstructor]
         public Guild()
         {
+            DefaultRoles = new List<ulong>();
+            IgnoredChannels = new List<ulong>();
         }
 
-        public Guild(ulong guildId)
+        public Guild(ulong guildId) : this()
         {
+            GuildId = guildId;
         }
 
         public ulong GuildId { get; set; }

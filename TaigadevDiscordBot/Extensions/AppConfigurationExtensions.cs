@@ -70,6 +70,8 @@ namespace TaigadevDiscordBot.Extensions
                 services.AddSingleton<ICommand, SetLevelCommand>();
                 services.AddSingleton<ICommand, ClownsTopCommand>();
                 services.AddSingleton<ICommand, CookiesTopCommand>();
+                services.AddSingleton<ICommand, IgnoreChannelCommand>();
+                services.AddSingleton<ICommand, UnignoreChannelCommand>();
 
                 // client
                 services.AddSingleton<DiscordSocketClient>();

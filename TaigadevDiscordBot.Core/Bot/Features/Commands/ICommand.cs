@@ -15,6 +15,8 @@ namespace TaigadevDiscordBot.Core.Bot.Features.Commands
 
         bool AuditCommand { get; }
 
+        bool AllowToUseInIgnore { get; }
+
         GuildPermission RequiredPermissions { get; }
 
         Task ExecuteAsync(SocketMessage message, SocketGuild guild);

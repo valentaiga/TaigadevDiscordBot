@@ -5,7 +5,9 @@ namespace TaigadevDiscordBot.Core.Bot.Features.Service
 {
     public interface IGuildRepository
     {
-        Task<Guild> GetGuildInformation(ulong guildId);
+        Task<Guild> GetGuildAsync(ulong guildId);
+
+        Task SaveGuildAsync(Guild guild);
 
         Task UpdateGuildAsync(ulong guildId, Func<Guild, Task> updateAction);
     }

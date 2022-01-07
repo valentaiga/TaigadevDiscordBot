@@ -16,13 +16,16 @@ namespace TaigadevDiscordBot.App.Bot.Features.Service
             _redisRepository = redisRepository;
         }
 
-        public async Task<Guild> GetGuildInformation(ulong guildId)
+        public async Task<Guild> GetGuildAsync(ulong guildId)
             => await _redisRepository.GetAsync<Guild>(Guild.GetCacheKey(guildId))
                 ?? new Guild(guildId);
 
+        public Task SaveGuildAsync(Guild guild)
+            => _redisRepository.SaveAsync(guild);
+
         public async Task UpdateGuildAsync(ulong guildId, Func<Guild, Task> updateAction)
         {
-            var guild = await GetGuildInformation(guildId);
+            var guild = await GetGuildAsync(guildId);
             await updateAction(guild);
         }
     }
