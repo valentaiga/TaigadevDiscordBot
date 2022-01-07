@@ -14,21 +14,21 @@ using TaigadevDiscordBot.Core.Helpers;
 
 namespace TaigadevDiscordBot.App.Bot.Features.Commands.Tops
 {
-    public class ClownsTopCommand : CommandBase
+    public class CookiesTopCommand : CommandBase
     {
         private readonly IEmojiCounterService _emojiCounterService;
         private readonly IUserRepository _userRepository;
         private readonly IBotConfiguration _botConfiguration;
 
-        public ClownsTopCommand(
+        public CookiesTopCommand(
             IEmojiCounterService emojiCounterService,
-            IUserRepository userRepository, 
-            IBotConfiguration botConfiguration) 
+            IUserRepository userRepository,
+            IBotConfiguration botConfiguration)
             : base(
-                "topclowns", 
-                "Get a current guild clown top", 
-                $"{botConfiguration.Prefix}topclowns", 
-                false, 
+                "topcookies",
+                "Get a current guild cookie top",
+                $"{botConfiguration.Prefix}topcookies",
+                false,
                 GuildPermission.SendMessages)
         {
             _emojiCounterService = emojiCounterService;
@@ -38,9 +38,9 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands.Tops
 
         public override async Task ExecuteAsync(SocketMessage message, SocketGuild guild)
         {
-            var top = await _emojiCounterService.GetCurrentGuildTop(guild.Id, Emojis.ClownEmote);
+            var top = await _emojiCounterService.GetCurrentGuildTop(guild.Id, Emojis.CookieEmote);
             var embedMessage = new EmbedBuilder()
-                .WithTitle($"'{guild.Name}' top clowns {Emojis.ClownEmote}")
+                .WithTitle($"'{guild.Name}' top cookie holders {Emojis.CookieEmote}")
                 .AdjustBotFields(_botConfiguration);
 
             var index = 1;
@@ -55,5 +55,6 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands.Tops
 
             await message.CommandMessageReplyAsync(null, embedMessage.Build(), TimeSpan.MaxValue);
         }
+
     }
 }

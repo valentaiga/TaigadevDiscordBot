@@ -7,8 +7,9 @@ using Discord.WebSocket;
 
 using TaigadevDiscordBot.Core.Bot;
 using TaigadevDiscordBot.Core.Bot.Features;
+using TaigadevDiscordBot.Core.Bot.Features.Collectors;
 using TaigadevDiscordBot.Core.Bot.Features.Commands;
-using TaigadevDiscordBot.Core.Bot.Features.UserActivity;
+using TaigadevDiscordBot.Core.Constants;
 using TaigadevDiscordBot.Core.Extensions;
 
 namespace TaigadevDiscordBot.App.Bot.Features.Commands.Profile
@@ -16,12 +17,12 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands.Profile
     public class GetProfileCommand : CommandBase
     {
         private readonly IUserRepository _userRepository;
-        private readonly IClownCollectorService _clownCollectorService;
+        private readonly IEmojiCounterService _emojiCounterService;
         private readonly IBotConfiguration _botConfiguration;
 
         public GetProfileCommand(
-            IUserRepository userRepository, 
-            IClownCollectorService clownCollectorService, 
+            IUserRepository userRepository,
+            IEmojiCounterService emojiCounterService,
             IBotConfiguration botConfiguration)
             : base(
                 "profile", 
@@ -31,7 +32,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands.Profile
                 GuildPermission.SendMessages)
         {
             _userRepository = userRepository;
-            _clownCollectorService = clownCollectorService;
+            _emojiCounterService = emojiCounterService;
             _botConfiguration = botConfiguration;
         }
 
@@ -41,13 +42,15 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands.Profile
                 ? message.MentionedUsers.First() as SocketGuildUser
                 : message.Author as SocketGuildUser;
             var user = await _userRepository.GetOrCreateUserAsync(dsUser!.Id, guild.Id);
-            var clownsCollectedCount = await _clownCollectorService.GetCurrentUserCount(dsUser.Id, guild.Id);
+            var clownsCount = await _emojiCounterService.GetCurrentUserCount(dsUser.Id, guild.Id, Emojis.ClownEmote);
+            var cookiesCount = await _emojiCounterService.GetCurrentUserCount(dsUser.Id, guild.Id, Emojis.CookieEmote);
 
             var embedBuilder = new EmbedBuilder()
                 .WithTitle($"{dsUser.Nickname ?? dsUser.Username} profile")
                 .AddField("Level", user.Level, true)
                 .AddField("Experience", user.Experience, true)
-                .AddField("Clowns", clownsCollectedCount, false)
+                .AddField("Clowns", $"{clownsCount} {Emojis.ClownEmote}", false)
+                .AddField("Cookies", $"{cookiesCount} {Emojis.CookieEmote}", true)
                 .AddField("Total voice time", GetFormattedVoiceTime())
                 .AddField("On server since", dsUser.JoinedAt!.Value.Date.ToString("Y"))
                 .WithThumbnailUrl(dsUser.GetAvatarUrl(size: 80))
