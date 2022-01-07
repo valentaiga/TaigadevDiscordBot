@@ -19,7 +19,7 @@ namespace TaigadevDiscordBot.Core.Extensions
             await message.Channel.SendAndRemoveMessageAsync(replyText, deleteMessageTimespan ?? DefaultDeleteMessageTimespan, embedMessage);
         }
 
-        public static async Task TryDeleteAsync(this SocketMessage message)
+        public static async Task TryDeleteAsync(this IMessage message)
         {
             try { await message.DeleteAsync(); } catch { }
         }

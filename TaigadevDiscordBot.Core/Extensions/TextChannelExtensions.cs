@@ -15,7 +15,7 @@ namespace TaigadevDiscordBot.Core.Extensions
             if (deleteTimespan != TimeSpan.MaxValue)
             {
                 await Task.Delay(deleteTimespan);
-                await message.DeleteAsync();
+                await message.TryDeleteAsync();
             }
         }
     }

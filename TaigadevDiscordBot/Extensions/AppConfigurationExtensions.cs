@@ -72,6 +72,8 @@ namespace TaigadevDiscordBot.Extensions
                 services.AddSingleton<ICommand, CookiesTopCommand>();
                 services.AddSingleton<ICommand, IgnoreChannelCommand>();
                 services.AddSingleton<ICommand, UnignoreChannelCommand>();
+                services.AddSingleton<ICommand, AddJoinRolesCommand>();
+                services.AddSingleton<ICommand, RemoveJoinRolesCommand>();
 
                 // client
                 services.AddSingleton<DiscordSocketClient>();

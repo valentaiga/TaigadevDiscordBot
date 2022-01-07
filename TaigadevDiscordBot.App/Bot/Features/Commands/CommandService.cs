@@ -57,7 +57,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands
                     await eventArgs.Message.CommandMessageReplyAsync(
                         $"Text chat is ignored and commands cant be executed here. You can unignore this channel by using '{unignoreCommand.UsageExample}' command");
                 }
-                 return;   
+                return;   
             }
 
             var userPermissions = eventArgs.User.GuildPermissions.ToList();
@@ -83,6 +83,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands
             
             // todo: use slash with prefix instead of just prefix in chat - https://labs.discordnet.dev/guides/int_basics/application-commands/slash-commands/creating-slash-commands.html
             await command.ExecuteAsync(eventArgs.Message, eventArgs.Guild);
+            await eventArgs.Message.TryDeleteAsync();
         }
 
         private string GetCommandFromMessage(SocketMessage message)

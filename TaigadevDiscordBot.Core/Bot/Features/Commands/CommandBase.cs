@@ -34,6 +34,6 @@ namespace TaigadevDiscordBot.Core.Bot.Features.Commands
 
         public GuildPermission RequiredPermissions { get; }
 
-        public abstract Task ExecuteAsync(SocketMessage message, SocketGuild guild);
+        public abstract Task ExecuteAsync(SocketMessage message, SocketGuild dsGuild);
     }
 }
