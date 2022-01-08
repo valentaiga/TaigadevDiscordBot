@@ -55,6 +55,7 @@ namespace TaigadevDiscordBot.Extensions
                 services.AddSingleton<IBotMaintainingService, BotMaintainingService>();
                 services.AddSingleton<IEmojiCounterService, EmojiCounterService>();
                 services.AddSingleton<IGuildRepository, GuildRepository>();
+                services.AddSingleton<IRolesService, RolesService>();
                 services.AddSingleton<IAuditLogger, AuditLogger>();
 
                 // initialization modules
@@ -76,6 +77,15 @@ namespace TaigadevDiscordBot.Extensions
                 services.AddSingleton<ICommand, RemoveJoinRolesCommand>();
 
                 // client
+                services.AddSingleton(_ =>
+                {
+                    var config = new DiscordSocketConfig
+                    {
+                        AlwaysDownloadUsers = true,
+                        MessageCacheSize = 100,
+                    };
+                    return new DiscordSocketClient(config);
+                });
                 services.AddSingleton<DiscordSocketClient>();
                 services.AddSingleton<IBotConfiguration, BotConfiguration>();
             });
