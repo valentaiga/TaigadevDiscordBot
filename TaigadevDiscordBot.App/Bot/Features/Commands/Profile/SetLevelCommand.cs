@@ -59,6 +59,13 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands.Profile
             }
             
             var mentionedUser = guild.GetUser(mentionedSocketUser.Id);
+
+            if (mentionedUser is null)
+            {
+                await message.CommandMessageReplyAsync($"Command is temporarily unavailable for mentioned user.");
+                return;
+            }
+
             var user = await _userRepository.GetOrCreateUserAsync(mentionedUser.Id, guild.Id);
             var embedMessageFields = new Dictionary<string, string>
             {
