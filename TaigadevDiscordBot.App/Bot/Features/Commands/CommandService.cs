@@ -16,11 +16,13 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands
     {
         private readonly ConcurrentDictionary<string, ICommand> _textCommands;
         private readonly IBotConfiguration _botConfiguration;
+        private readonly IGuildRepository _guildRepository;
         private readonly IAuditLogger _auditLogger;
 
-        public CommandService(IBotConfiguration botConfiguration, IEnumerable<ICommand> textCommands, IAuditLogger auditLogger)
+        public CommandService(IBotConfiguration botConfiguration, IGuildRepository guildRepository, IEnumerable<ICommand> textCommands, IAuditLogger auditLogger)
         {
             _botConfiguration = botConfiguration;
+            _guildRepository = guildRepository;
             _auditLogger = auditLogger;
             _textCommands = new(textCommands.ToDictionary(x => x.Command, x => x));
         }
@@ -47,6 +49,17 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands
                 return;
             }
 
+            if (await IsTextChannelIgnoredAsync(eventArgs.Message.Channel.Id, eventArgs.Guild.Id)
+                && !command.AllowToUseInIgnore)
+            {
+                if (_textCommands.TryGetValue("unignore", out var unignoreCommand))
+                {
+                    await eventArgs.Message.CommandMessageReplyAsync(
+                        $"Text chat is ignored and commands cant be executed here. You can unignore this channel by using '{unignoreCommand.UsageExample}' command");
+                }
+                return;   
+            }
+
             var userPermissions = eventArgs.User.GuildPermissions.ToList();
             if (!userPermissions.Contains(command.RequiredPermissions))
             {
@@ -70,6 +83,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands
             
             // todo: use slash with prefix instead of just prefix in chat - https://labs.discordnet.dev/guides/int_basics/application-commands/slash-commands/creating-slash-commands.html
             await command.ExecuteAsync(eventArgs.Message, eventArgs.Guild);
+            await eventArgs.Message.TryDeleteAsync();
         }
 
         private string GetCommandFromMessage(SocketMessage message)
@@ -82,6 +96,12 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands
             }
 
             return split[0][_botConfiguration.Prefix.Length..];
+        }
+
+        private async Task<bool> IsTextChannelIgnoredAsync(ulong textChannelId, ulong guildId)
+        {
+            var guild = await _guildRepository.GetGuildAsync(guildId);
+            return guild.IgnoredChannels.Contains(textChannelId);
         }
     }
 }

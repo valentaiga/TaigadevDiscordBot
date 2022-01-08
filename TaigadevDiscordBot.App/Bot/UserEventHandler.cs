@@ -23,12 +23,14 @@ namespace TaigadevDiscordBot.App.Bot
         private event Func<VoiceStatusUpdatedEventArgs, ValueTask> VoiceStatusUpdatedHandler;
         private event Func<NewTextMessageEventArgs, ValueTask> NewTextMessageHandler;
         private event Func<ReactionAddedEventArgs, ValueTask> ReactionAddedHandler;
+        private event Func<UserJoinedEventArgs, ValueTask> UserJoinedHandler;
 
         public UserEventHandler(
             IVoiceActivityService voiceActivityService, 
             ITextActivityService textActivityService,
             IEmojiCounterService emojiCounterService,
             ICommandService commandService,
+            IRolesService rolesService,
             IAuditLogger auditLogger,
             ILogger<UserEventHandler> logger)
         {
@@ -38,6 +40,7 @@ namespace TaigadevDiscordBot.App.Bot
             NewTextMessageHandler += textActivityService.UpdateUserTextActivityAsync;
             NewTextMessageHandler += commandService.ExecuteCommandAsync;
             ReactionAddedHandler += emojiCounterService.IncrementUserEmojiCount;
+            UserJoinedHandler += rolesService.SetRolesToNewUser;
         }
 
         public async Task OnUserVoiceStateUpdated(SocketUser user, SocketVoiceState oldVoiceState, SocketVoiceState newVoiceState)
@@ -89,13 +92,27 @@ namespace TaigadevDiscordBot.App.Bot
                 var eventArgs = new ReactionAddedEventArgs(message, textChannel, reaction);
                 try
                 {
-                    await ReactionAddedHandler(eventArgs);
+                    await ReactionAddedHandler!(eventArgs);
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError($"Error during message processing: {ex}");
                     await _auditLogger.LogErrorAsync(ex, textChannel.Guild.Id);
                 }
+            }
+        }
+
+        public async Task OnUserJoined(SocketGuildUser dsUser)
+        {
+            var eventArgs = new UserJoinedEventArgs(dsUser);
+            try
+            {
+                await UserJoinedHandler!(eventArgs);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error during message processing: {ex}");
+                await _auditLogger.LogErrorAsync(ex, dsUser.Guild.Id);
             }
         }
     }

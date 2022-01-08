@@ -31,7 +31,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands.Profile
             IAuditLogger auditLogger)
             : base(
                 "setlevel", 
-                "Set leve of user", 
+                "Change mentioned user level", 
                 $"{botConfiguration.Prefix}setlevel @mention 0", 
                 true, 
                 GuildPermission.Administrator)
@@ -44,9 +44,10 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands.Profile
 
         public override async Task ExecuteAsync(SocketMessage message, SocketGuild guild)
         {
-            if (message.MentionedUsers.FirstOrDefault() is not SocketGuildUser mentionedUser)
+            var mentionedSocketUser = message.MentionedUsers.FirstOrDefault();
+            if (mentionedSocketUser is null)
             {
-                await message.CommandMessageReplyAsync($"Command '{Command}' requires user to mention.");
+                await message.CommandMessageReplyAsync($"Command '{Command}' requires user to mention. Example: '{UsageExample}'");
                 return;
             }
 
@@ -56,7 +57,8 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands.Profile
                 await message.CommandMessageReplyAsync($"Command '{Command}' incorrect usage. Example: '{UsageExample}'");
                 return;
             }
-
+            
+            var mentionedUser = guild.GetUser(mentionedSocketUser.Id);
             var user = await _userRepository.GetOrCreateUserAsync(mentionedUser.Id, guild.Id);
             var embedMessageFields = new Dictionary<string, string>
             {
