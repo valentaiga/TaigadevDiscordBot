@@ -48,9 +48,9 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands.Tops
             {
                 var dsUser = guild.GetUser(keyValuePair.Key);
                 var user = await _userRepository.GetOrCreateUserAsync(keyValuePair.Key, guild.Id);
-                var cookiesCount = await _emojiCounterService.GetCurrentUserCount(user.UserId, user.GuildId, Emojis.CookieEmote);
+                var clownsCount = await _emojiCounterService.GetCurrentUserCount(user.UserId, user.GuildId, Emojis.ClownEmote);
                 var nickname = dsUser?.Nickname ?? dsUser?.Username ?? user.Nickname;
-                embedMessage.AddField($"#{index++}. {nickname}", BeautifyHelper.GetUserInfo(user, keyValuePair.Value, cookiesCount));
+                embedMessage.AddField($"#{index++}. {nickname}", BeautifyHelper.GetUserInfo(user, clownsCount, keyValuePair.Value));
             }
 
             await message.CommandMessageReplyAsync(null, embedMessage.Build(), TimeSpan.MaxValue);
