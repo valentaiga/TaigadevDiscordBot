@@ -57,6 +57,7 @@ namespace TaigadevDiscordBot.Extensions
                 services.AddSingleton<IGuildRepository, GuildRepository>();
                 services.AddSingleton<IRolesService, RolesService>();
                 services.AddSingleton<IAuditLogger, AuditLogger>();
+                services.AddSingleton<IPersonalAuditLogger, PersonalAuditLogger>();
 
                 // initialization modules
                 services.AddSingleton<IInitializationModule, ServiceChannelsInitialization>();
@@ -74,6 +75,8 @@ namespace TaigadevDiscordBot.Extensions
                 services.AddSingleton<ICommand, UnignoreChannelCommand>();
                 services.AddSingleton<ICommand, AddJoinRolesCommand>();
                 services.AddSingleton<ICommand, RemoveJoinRolesCommand>();
+                services.AddSingleton<ICommand, TrackUserCommand>();
+                services.AddSingleton<ICommand, UserAuditCommand>();
 
                 // client
                 services.AddSingleton(_ =>
@@ -85,7 +88,6 @@ namespace TaigadevDiscordBot.Extensions
                     };
                     return new DiscordSocketClient(config);
                 });
-                services.AddSingleton<DiscordSocketClient>();
                 services.AddSingleton<IBotConfiguration, BotConfiguration>();
             });
 

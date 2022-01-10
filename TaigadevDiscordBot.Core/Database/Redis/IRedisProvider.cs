@@ -17,7 +17,13 @@ namespace TaigadevDiscordBot.Core.Database.Redis
 
         Task<T> GetFromHashAsync<T>(string outerKey, string innerKey);
 
-        Task AddToHashAsync<T>(string cacheKey, IEnumerable<T> values);
+        Task SetAddAsync<T>(string cacheKey, T value);
+
+        Task<IEnumerable<T>> SetGetAllAsync<T>(string cacheKey);
+
+        Task<bool> SetContainsAsync<T>(string cacheKey, T value);
+
+        Task SetAddAsync<T>(string cacheKey, IEnumerable<T> values);
 
         Task<IList<T>> PopSetAsync<T>(string cacheKey);
     }

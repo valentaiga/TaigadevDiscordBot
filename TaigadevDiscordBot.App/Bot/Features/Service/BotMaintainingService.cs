@@ -25,7 +25,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.Service
             var activities = _voiceActivityService.CollectActivities().ToArray();
             if (activities.Length > 0)
             {
-                await _redisProvider.AddToHashAsync(CacheKey, activities);
+                await _redisProvider.SetAddAsync(CacheKey, activities);
             }
         }
 
