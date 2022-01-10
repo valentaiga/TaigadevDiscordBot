@@ -27,7 +27,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands.Unspecified
             _serviceProvider = serviceProvider;
         }
         
-        public override Task ExecuteAsync(SocketMessage message, SocketGuild guild)
+        public override Task ExecuteAsync(SocketMessage message, IGuild dsGuild)
         {
             var embedBuilder = new EmbedBuilder()
                 .WithColor(Color.Gold);

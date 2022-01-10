@@ -36,18 +36,18 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands.Tops
             _botConfiguration = botConfiguration;
         }
 
-        public override async Task ExecuteAsync(SocketMessage message, SocketGuild guild)
+        public override async Task ExecuteAsync(SocketMessage message, IGuild dsGuild)
         {
-            var top = await _emojiCounterService.GetCurrentGuildTop(guild.Id, Emojis.CookieEmote);
+            var top = await _emojiCounterService.GetCurrentGuildTop(dsGuild.Id, Emojis.CookieEmote);
             var embedMessage = new EmbedBuilder()
-                .WithTitle($"'{guild.Name}' top cookie holders {Emojis.CookieEmote}")
+                .WithTitle($"'{dsGuild.Name}' top cookie holders {Emojis.CookieEmote}")
                 .AdjustBotFields(_botConfiguration);
 
             var index = 1;
             foreach (var keyValuePair in top)
             {
-                var dsUser = guild.GetUser(keyValuePair.Key);
-                var user = await _userRepository.GetOrCreateUserAsync(keyValuePair.Key, guild.Id);
+                var dsUser = await dsGuild.GetUserAsync(keyValuePair.Key);
+                var user = await _userRepository.GetOrCreateUserAsync(keyValuePair.Key, dsGuild.Id);
                 var clownsCount = await _emojiCounterService.GetCurrentUserCount(user.UserId, user.GuildId, Emojis.ClownEmote);
                 var nickname = dsUser?.Nickname ?? dsUser?.Username ?? user.Nickname;
                 embedMessage.AddField($"#{index++}. {nickname}", BeautifyHelper.GetUserInfo(user, clownsCount, keyValuePair.Value));

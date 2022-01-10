@@ -26,7 +26,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands.Fun
         {
         }
 
-        public override async Task ExecuteAsync(SocketMessage message, SocketGuild guild)
+        public override async Task ExecuteAsync(SocketMessage message, IGuild dsGuild)
         {
             if (message.MentionedUsers.FirstOrDefault() is not SocketGuildUser mentionedUser)
             {
@@ -34,7 +34,14 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands.Fun
                 return;
             }
 
-            var currentUserVoiceChannel = guild.VoiceChannels.FirstOrDefault(x => x.Users.Any(x => x.Id == mentionedUser.Id));
+            if (mentionedUser.VoiceChannel is null)
+            {
+                await message.CommandMessageReplyAsync($"Command '{Command}' requires mentioned user to be in voice channel.");
+                return;
+            }
+
+            var voiceChannels = (await dsGuild.GetVoiceChannelsAsync()).ToImmutableArray();
+            var currentUserVoiceChannel = voiceChannels.FirstOrDefault(x => x.Id == mentionedUser.VoiceChannel.Id);
 
             if (currentUserVoiceChannel is null)
             {
@@ -42,10 +49,9 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands.Fun
                 return;
             }
 
-            var availableChannelsToMove = guild.VoiceChannels.ToImmutableArray();
-
-            if (availableChannelsToMove.Length == 0)
+            if (voiceChannels.Length < 3)
             {
+                await message.CommandMessageReplyAsync($"Command '{Command}' requires at least 3 voice channels.");
                 return;
             }
 
@@ -76,7 +82,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands.Fun
                 return nextVoiceChannelId;
             }
 
-            ulong GetRandomChannel() => availableChannelsToMove[_random.Next(0, availableChannelsToMove.Length)].Id;
+            ulong GetRandomChannel() => voiceChannels[_random.Next(0, voiceChannels.Length)].Id;
         }
     }
 }
