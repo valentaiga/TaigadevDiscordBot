@@ -42,7 +42,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands.Profile
             _auditLogger = auditLogger;
         }
 
-        public override async Task ExecuteAsync(SocketMessage message, SocketGuild guild)
+        public override async Task ExecuteAsync(SocketMessage message, IGuild dsGuild)
         {
             var mentionedSocketUser = message.MentionedUsers.FirstOrDefault();
             if (mentionedSocketUser is null)
@@ -58,15 +58,9 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands.Profile
                 return;
             }
             
-            var mentionedUser = guild.GetUser(mentionedSocketUser.Id);
+            var mentionedUser = await dsGuild.GetUserAsync(mentionedSocketUser.Id);
 
-            if (mentionedUser is null)
-            {
-                await message.CommandMessageReplyAsync($"Command is temporarily unavailable for mentioned user.");
-                return;
-            }
-
-            var user = await _userRepository.GetOrCreateUserAsync(mentionedUser.Id, guild.Id);
+            var user = await _userRepository.GetOrCreateUserAsync(mentionedUser.Id, dsGuild.Id);
             var embedMessageFields = new Dictionary<string, string>
             {
                 { "Previous level", user.Level.ToString() },
@@ -78,7 +72,8 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands.Profile
             embedMessageFields.Add("Current experience", user.Experience.ToString());
             
             _logger.LogDebug(auditMessage);
-            await _auditLogger.LogInformationAsync(auditMessage, guild.Id, embedMessageFields);
+            await _auditLogger.LogInformationAsync(auditMessage, dsGuild.Id, embedMessageFields);
+            await message.CommandMessageReplyAsync($"User '{user.Nickname}' successfully updated level updated to '{setLevel}'");
         }
     }
 }

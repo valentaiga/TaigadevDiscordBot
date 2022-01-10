@@ -36,14 +36,14 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands.Profile
             _botConfiguration = botConfiguration;
         }
 
-        public override async Task ExecuteAsync(SocketMessage message, SocketGuild guild)
+        public override async Task ExecuteAsync(SocketMessage message, IGuild dsGuild)
         {
             var dsUser = message.MentionedUsers.Count == 1
                 ? message.MentionedUsers.First() as SocketGuildUser
                 : message.Author as SocketGuildUser;
-            var user = await _userRepository.GetOrCreateUserAsync(dsUser!.Id, guild.Id);
-            var clownsCount = await _emojiCounterService.GetCurrentUserCount(dsUser.Id, guild.Id, Emojis.ClownEmote);
-            var cookiesCount = await _emojiCounterService.GetCurrentUserCount(dsUser.Id, guild.Id, Emojis.CookieEmote);
+            var user = await _userRepository.GetOrCreateUserAsync(dsUser!.Id, dsGuild.Id);
+            var clownsCount = await _emojiCounterService.GetCurrentUserCount(dsUser.Id, dsGuild.Id, Emojis.ClownEmote);
+            var cookiesCount = await _emojiCounterService.GetCurrentUserCount(dsUser.Id, dsGuild.Id, Emojis.CookieEmote);
 
             var embedBuilder = new EmbedBuilder()
                 .WithTitle($"{dsUser.Nickname ?? dsUser.Username} profile")

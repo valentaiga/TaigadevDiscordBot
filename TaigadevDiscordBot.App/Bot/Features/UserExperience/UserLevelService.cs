@@ -1,8 +1,9 @@
 ﻿using System.Collections.Concurrent;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
+using Discord;
 using Discord.WebSocket;
 
 using Microsoft.Extensions.Logging;
@@ -81,9 +82,9 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserExperience
                 var dsUser = guild.GetUser(userId);
                 user.Level++;
 
-                await UpdateRolesAsync(dsUser, user);
+                await UpdateRolesAsync(guild, user);
 
-                _logger.LogInformation($"User '{dsUser.Nickname ?? dsUser.Username}' with id '{dsUser.Id}' level updated to '{user.Level}'");
+                _logger.LogInformation($"User with id '{dsUser.Id}' level updated to '{user.Level}'");
             });
         }
 
@@ -114,7 +115,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserExperience
             user.Experience = _levels[user.Level--];
         }
 
-        public async Task<User> SetUserLevelAsync(SocketGuildUser dsUser, int level)
+        public async Task<User> SetUserLevelAsync(IGuildUser dsUser, int level)
         {
             if (!_levels.TryGetValue(level, out var levelExperience))
             {
@@ -128,14 +129,15 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserExperience
                 return Task.CompletedTask;
             });
 
-            await UpdateRolesAsync(dsUser, user);
+            await UpdateRolesAsync(dsUser.Guild, user);
             return user;
         }
 
-        private async Task UpdateRolesAsync(SocketGuildUser dsUser, User user)
+        private async Task UpdateRolesAsync(IGuild guild, User user)
         {
-            var guild = dsUser.Guild;
-            var nextLevelRole = guild.Roles.FirstOrDefault(x => x.Name.StartsWith($"{user.Level}."));
+            var dsUser = await guild.GetUserAsync(user.UserId);
+            var guildRoles = guild.Roles.ToList();
+            var nextLevelRole = guildRoles.Find(x => x.Name.StartsWith($"{user.Level}."));
 
             // next level has no role
             if (nextLevelRole is null)
@@ -144,11 +146,12 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserExperience
                 return;
             }
 
-            var removeLevelRoles = dsUser.Roles
-                .Where(x => _roleLevelRegex.IsMatch(x.Name))
+            var removeLevelRoles = dsUser.RoleIds
+                .Select(x => guildRoles.Find(gr => gr.Id == x))
+                .Where(x => _roleLevelRegex.IsMatch(x!.Name))
                 .Select(x => x.Id)
                 .Except(new[] { nextLevelRole.Id })
-                .ToArray();
+                .ToImmutableArray();
 
 #if DEBUG
             _logger.LogDebug($"User '{dsUser.Nickname ?? dsUser.Username}' role '{nextLevelRole.Name}' added. (just log, nothing happen)");
@@ -162,7 +165,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserExperience
             {
                 await dsUser.RemoveRolesAsync(removeLevelRoles);
             }
-            _logger.LogInformation($"User '{dsUser.Username}' roles updated: [{string.Join(", ", removeLevelRoles)}] removed, {nextLevelRole.Name} added");
+            _logger.LogInformation($"User '{dsUser.Nickname ?? dsUser.Username}' roles updated: [{string.Join(", ", removeLevelRoles)}] removed, {nextLevelRole.Name} added");
 #endif
         }
     }

@@ -67,7 +67,6 @@ namespace TaigadevDiscordBot.Extensions
                 services.AddSingleton<ICommand, ChaosVoiceMoveCommand>();
                 services.AddSingleton<ICommand, GetProfileCommand>();
                 services.AddSingleton<ICommand, HelpCommand>();
-                services.AddSingleton<ICommand, GetHostedServicesCommand>();
                 services.AddSingleton<ICommand, SetLevelCommand>();
                 services.AddSingleton<ICommand, ClownsTopCommand>();
                 services.AddSingleton<ICommand, CookiesTopCommand>();

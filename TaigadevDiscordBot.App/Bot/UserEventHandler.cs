@@ -59,7 +59,7 @@ namespace TaigadevDiscordBot.App.Bot
                 }
             }
 
-            SocketGuild GetGuild()
+            IGuild GetGuild()
                 => oldVoiceState.VoiceChannel?.Guild ?? newVoiceState.VoiceChannel?.Guild;
         }
 

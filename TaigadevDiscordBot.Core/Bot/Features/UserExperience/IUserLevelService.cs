@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-using Discord.WebSocket;
+using Discord;
 
 namespace TaigadevDiscordBot.Core.Bot.Features.UserExperience
 {
@@ -10,6 +10,6 @@ namespace TaigadevDiscordBot.Core.Bot.Features.UserExperience
         
         Task<User> LevelUpUserAsync(ulong userId, ulong guildId);
 
-        Task<User> SetUserLevelAsync(SocketGuildUser dsUser, int level);
+        Task<User> SetUserLevelAsync(IGuildUser dsUser, int level);
     }
 }

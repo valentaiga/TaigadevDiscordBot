@@ -34,7 +34,8 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
                 await _userRepository.UpdateUserAsync(eventArgs.User.Id, eventArgs.Guild.Id, user =>
                 {
                     user.Nickname = eventArgs.User.Nickname ?? eventArgs.User.Username;
-                    user.Roles = eventArgs.User.Roles.Where(x => !x.IsEveryone).Select(x => x.Id).ToList();
+                    // roles without 'everyone' role
+                    user.Roles = eventArgs.User.RoleIds.Where(x => x != eventArgs.Guild.Id).ToList();
                     user.Experience += _experienceCalculationService.CalculateChatMessageExperience(1);
                     return Task.CompletedTask;
                 });

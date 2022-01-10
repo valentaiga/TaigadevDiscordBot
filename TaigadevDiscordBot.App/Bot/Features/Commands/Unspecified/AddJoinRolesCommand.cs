@@ -26,7 +26,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands.Unspecified
             _guildRepository = guildRepository;
         }
 
-        public override async Task ExecuteAsync(SocketMessage message, SocketGuild dsGuild)
+        public override async Task ExecuteAsync(SocketMessage message, IGuild dsGuild)
         {
             var mentionedRoles = message.MentionedRoles;
             var guild = await _guildRepository.GetGuildAsync(dsGuild.Id);

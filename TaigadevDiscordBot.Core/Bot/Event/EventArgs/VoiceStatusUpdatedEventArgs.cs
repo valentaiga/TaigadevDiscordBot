@@ -1,10 +1,11 @@
-﻿using Discord.WebSocket;
+﻿using Discord;
+using Discord.WebSocket;
 
 namespace TaigadevDiscordBot.Core.Bot.Event.EventArgs
 {
     public class VoiceStatusUpdatedEventArgs
     {
-        public VoiceStatusUpdatedEventArgs(SocketGuildUser user, SocketGuild guild, SocketVoiceChannel previousChannel, SocketVoiceChannel currentChannel)
+        public VoiceStatusUpdatedEventArgs(SocketGuildUser user, IGuild guild, SocketVoiceChannel previousChannel, SocketVoiceChannel currentChannel)
         {
             User = user;
             Guild = guild;
@@ -13,7 +14,7 @@ namespace TaigadevDiscordBot.Core.Bot.Event.EventArgs
         }
 
         public SocketGuildUser User;
-        public SocketGuild Guild;
+        public IGuild Guild;
         public SocketVoiceChannel PreviousChannel;
         public SocketVoiceChannel CurrentChannel;
     }
