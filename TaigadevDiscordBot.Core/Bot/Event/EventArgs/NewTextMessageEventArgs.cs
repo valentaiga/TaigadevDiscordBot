@@ -1,10 +1,11 @@
-﻿using Discord.WebSocket;
+﻿using Discord;
+using Discord.WebSocket;
 
 namespace TaigadevDiscordBot.Core.Bot.Event.EventArgs
 {
     public class NewTextMessageEventArgs
     {
-        public NewTextMessageEventArgs(SocketMessage message, SocketGuildUser user, SocketGuild guild)
+        public NewTextMessageEventArgs(SocketMessage message, IGuildUser user, IGuild guild)
         {
             Message = message;
             User = user;
@@ -12,7 +13,7 @@ namespace TaigadevDiscordBot.Core.Bot.Event.EventArgs
         }
         
         public SocketMessage Message;
-        public SocketGuildUser User;
-        public SocketGuild Guild;
+        public IGuildUser User;
+        public IGuild Guild;
     }
 }
