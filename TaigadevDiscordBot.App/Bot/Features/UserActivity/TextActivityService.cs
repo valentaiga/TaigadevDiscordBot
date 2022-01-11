@@ -15,13 +15,13 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
         private readonly ConcurrentDictionary<ulong, ulong> _channelsActivity = new();
 
         private readonly IUserRepository _userRepository;
-        private readonly IExperienceCalculationService _experienceCalculationService;
+        private readonly IExperienceService _experienceService;
         private readonly IUserLevelService _userLevelService;
 
-        public TextActivityService(IUserRepository userRepository, IExperienceCalculationService experienceCalculationService, IUserLevelService userLevelService)
+        public TextActivityService(IUserRepository userRepository, IExperienceService experienceService, IUserLevelService userLevelService)
         {
             _userRepository = userRepository;
-            _experienceCalculationService = experienceCalculationService;
+            _experienceService = experienceService;
             _userLevelService = userLevelService;
         }
 
@@ -31,13 +31,12 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
             if (!_channelsActivity.TryRemove(key, out var lastAuthorId) 
                 || lastAuthorId != eventArgs.User.Id)
             {
-                await _userRepository.UpdateUserAsync(eventArgs.User.Id, eventArgs.Guild.Id, user =>
+                await _userRepository.UpdateUserAsync(eventArgs.User.Id, eventArgs.Guild.Id, async user =>
                 {
                     user.Nickname = eventArgs.User.Nickname ?? eventArgs.User.Username;
                     // roles without 'everyone' role
                     user.Roles = eventArgs.User.RoleIds.Where(x => x != eventArgs.Guild.Id).ToList();
-                    user.Experience += _experienceCalculationService.CalculateChatMessageExperience(1);
-                    return Task.CompletedTask;
+                    user.Experience += await _experienceService.CalculateMessageExperienceAsync(user.UserId, user.GuildId);
                 });
 
                 await _userLevelService.LevelUpUserIfNeededAsync(eventArgs.User.Id, eventArgs.Guild.Id);

@@ -63,23 +63,23 @@ namespace TaigadevDiscordBot.App.Database.Redis
 
         public Task SetAddAsync<T>(string cacheKey, T value)
         {
-            return Database.SetAddAsync(cacheKey, SerializeValue(value));
+            return Database.SetAddAsync(AdjustProjectPrefix(cacheKey), SerializeValue(value));
         }
 
         public Task<bool> SetContainsAsync<T>(string cacheKey, T value)
         {
-            return Database.SetContainsAsync(cacheKey, SerializeValue(value));
+            return Database.SetContainsAsync(AdjustProjectPrefix(cacheKey), SerializeValue(value));
         }
 
         public Task SetAddAsync<T>(string cacheKey, IEnumerable<T> values)
         {
             var redisValues = values.Select(x => new RedisValue(SerializeValue(x))).ToArray();
-            return Database.SetAddAsync(cacheKey, redisValues);
+            return Database.SetAddAsync(AdjustProjectPrefix(cacheKey), redisValues);
         }
 
         public async Task<IEnumerable<T>> SetGetAllAsync<T>(string cacheKey)
         {
-            var result = await Database.SetMembersAsync(cacheKey);
+            var result = await Database.SetMembersAsync(AdjustProjectPrefix(cacheKey));
             return result is null ? Enumerable.Empty<T>() : result.Select(x => DeserializeValue<T>(x));
         }
 
@@ -88,7 +88,7 @@ namespace TaigadevDiscordBot.App.Database.Redis
             var result = new List<T>();
             RedisValue value;
 
-            while ((value = await Database.SetPopAsync(cacheKey)).HasValue)
+            while ((value = await Database.SetPopAsync(AdjustProjectPrefix(cacheKey))).HasValue)
             {
                 result.Add(DeserializeValue<T>(value));
             }

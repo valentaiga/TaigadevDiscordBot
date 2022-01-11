@@ -16,7 +16,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
     public class UserActivityUpdateHostService : IHostedService, IDisposable
     {
         private readonly IVoiceActivityService _voiceActivityService;
-        private readonly IExperienceCalculationService _experienceCalculationService;
+        private readonly IExperienceService _experienceService;
         private readonly IUserRepository _userRepository;
         private readonly IUserLevelService _userLevelService;
         private readonly IBotMaintainingService _botMaintainingService;
@@ -26,14 +26,14 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
 
         public UserActivityUpdateHostService(
             IVoiceActivityService voiceActivityService, 
-            IExperienceCalculationService experienceCalculationService, 
+            IExperienceService experienceService, 
             IUserRepository userRepository,
             IUserLevelService userLevelService,
             IBotMaintainingService botMaintainingService,
             ILogger<UserActivityUpdateHostService> logger)
         {
             _voiceActivityService = voiceActivityService;
-            _experienceCalculationService = experienceCalculationService;
+            _experienceService = experienceService;
             _userRepository = userRepository;
             _userLevelService = userLevelService;
             _botMaintainingService = botMaintainingService;
@@ -66,7 +66,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
             {
                 try
                 {
-                    var expToAdd = _experienceCalculationService.CalculateVoiceExperience(activity.TimeInVoiceSpent);
+                    var expToAdd = await _experienceService.CalculateVoiceExperienceAsync(activity.UserId, activity.GuildId, activity.TimeInVoiceSpent);
                     if (expToAdd == 0)
                     {
                         continue;
