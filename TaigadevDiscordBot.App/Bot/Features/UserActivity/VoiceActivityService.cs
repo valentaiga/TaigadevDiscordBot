@@ -39,6 +39,14 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
                 return;
             }
 
+            if (eventArgs.User.IsMuted())
+            {
+                ProcessMutedUser();
+                personalAuditMessage += $"| S: mute | A: {IsUserInVoice()}";
+                await _personalAuditLogger.AuditAsync(eventArgs.User.Id, eventArgs.Guild.Id, personalAuditMessage);
+                return;
+            }
+
             if (eventArgs.CurrentChannel is null)
             {
                 ProcessLeftUser();
@@ -104,6 +112,17 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
                     // finish last person activity in channel
                     _userActivitiesToCollect.Enqueue(UpdateActivity(usersInChannel.Values.First()));
                     _usersActivity.TryRemove(previousChannelId, out _);
+                }
+            }
+
+            void ProcessMutedUser()
+            {
+                var currentChannelId = eventArgs.CurrentChannel!.Id;
+                var usersInChannel = GetUsersInVoiceChannel(currentChannelId);
+
+                if (usersInChannel.TryRemove(eventArgs.User.Id, out var activity) && usersInChannel.Count > 1)
+                {
+                    _userActivitiesToCollect.Enqueue(UpdateActivity(activity));
                 }
             }
 
