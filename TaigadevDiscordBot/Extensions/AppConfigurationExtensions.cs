@@ -47,7 +47,7 @@ namespace TaigadevDiscordBot.Extensions
 
                 // features
                 services.AddSingleton<IUserEventHandler, UserEventHandler>();
-                services.AddSingleton<IExperienceCalculationService, ExperienceCalculationService>();
+                services.AddSingleton<IExperienceService, ExperienceService>();
                 services.AddSingleton<IUserLevelService, UserLevelService>();
                 services.AddSingleton<IUserRepository, RedisUserRepository>();
                 services.AddSingleton<IVoiceActivityService, VoiceActivityService>();
@@ -75,6 +75,8 @@ namespace TaigadevDiscordBot.Extensions
                 services.AddSingleton<ICommand, UnignoreChannelCommand>();
                 services.AddSingleton<ICommand, AddJoinRolesCommand>();
                 services.AddSingleton<ICommand, RemoveJoinRolesCommand>();
+                services.AddSingleton<ICommand, ProhibitExperienceCommand>();
+                services.AddSingleton<ICommand, AllowExperienceGainCommand>();
                 services.AddSingleton<ICommand, TrackUserCommand>();
                 services.AddSingleton<ICommand, UserAuditCommand>();
 

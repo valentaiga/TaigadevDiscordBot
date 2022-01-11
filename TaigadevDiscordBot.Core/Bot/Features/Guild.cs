@@ -12,6 +12,7 @@ namespace TaigadevDiscordBot.Core.Bot.Features
         {
             DefaultRoles = new List<ulong>();
             IgnoredChannels = new List<ulong>();
+            ProhibitExperienceUsers = new List<ulong>();
         }
 
         public Guild(ulong guildId) : this()
@@ -24,6 +25,8 @@ namespace TaigadevDiscordBot.Core.Bot.Features
         public IList<ulong> DefaultRoles { get; set; }
 
         public IList<ulong> IgnoredChannels { get; set; }
+
+        public IList<ulong> ProhibitExperienceUsers { get; set; }
 
         public string GetCacheKey()
             => GetCacheKey(GuildId);
