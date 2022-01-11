@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using TaigadevDiscordBot.Core.Bot.Event.EventArgs;
+using TaigadevDiscordBot.Core.Bot.Features.Service;
 using TaigadevDiscordBot.Core.Bot.Features.UserActivity;
 using TaigadevDiscordBot.Core.Extensions;
 
@@ -12,36 +13,78 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
 {
     public class VoiceActivityService : IVoiceActivityService
     {
-                                                // voiceChannelId, userId / userVoiceActivity
+        private readonly IPersonalAuditLogger _personalAuditLogger;
+
+        // voiceChannelId, userId / userVoiceActivity
         private readonly ConcurrentDictionary<ulong, ConcurrentDictionary<ulong, UserVoiceActivity>> _usersActivity = new();
         
         // contains activities to collect
         private readonly ConcurrentQueue<UserVoiceActivity> _userActivitiesToCollect = new();
 
-        public ValueTask UpdateUserVoiceActivityAsync(VoiceStatusUpdatedEventArgs eventArgs)
+        public VoiceActivityService(IPersonalAuditLogger personalAuditLogger)
+        {
+            _personalAuditLogger = personalAuditLogger;
+        }
+
+        public async ValueTask UpdateUserVoiceActivityAsync(VoiceStatusUpdatedEventArgs eventArgs)
         {
             var dtNow = DateTime.UtcNow;
             var currentUserId = eventArgs.User.Id;
 
+            var personalAuditMessage = $"{DateTime.UtcNow}: Muted: {eventArgs.User.IsMuted()} | PC: {eventArgs.PreviousChannel is not null} | CC: {eventArgs.CurrentChannel is not null} | B: {IsUserInVoice()} ";
             if (eventArgs.PreviousChannel is null && eventArgs.User.IsMuted())
             {
-                return ValueTask.CompletedTask;
+                personalAuditMessage += "| S: none";
+                await _personalAuditLogger.AuditAsync(eventArgs.User.Id, eventArgs.Guild.Id, personalAuditMessage);
+                return;
+            }
+
+            if (eventArgs.User.IsMuted())
+            {
+                ProcessMutedUser();
+                personalAuditMessage += $"| S: mute | A: {IsUserInVoice()}";
+                await _personalAuditLogger.AuditAsync(eventArgs.User.Id, eventArgs.Guild.Id, personalAuditMessage);
+                return;
             }
 
             if (eventArgs.CurrentChannel is null)
             {
                 ProcessLeftUser();
-                return ValueTask.CompletedTask;
+                personalAuditMessage += $"| S: left | A: {IsUserInVoice()}";
+                await _personalAuditLogger.AuditAsync(eventArgs.User.Id, eventArgs.Guild.Id, personalAuditMessage);
+                return;
             }
 
             if (eventArgs.PreviousChannel is null)
             {
                 ProcessJoinedUser();
-                return ValueTask.CompletedTask;
+                personalAuditMessage += $"| S: join | A: {IsUserInVoice()}";
+                await _personalAuditLogger.AuditAsync(eventArgs.User.Id, eventArgs.Guild.Id, personalAuditMessage);
+                return;
             }
 
             ProcessMovedUser();
-            return ValueTask.CompletedTask;
+            personalAuditMessage += $"| S: move | A: {IsUserInVoice()}";
+            await _personalAuditLogger.AuditAsync(eventArgs.User.Id, eventArgs.Guild.Id, personalAuditMessage);
+            return;
+
+            bool IsUserInVoice()
+            {
+                var result = false;
+                if (eventArgs.CurrentChannel is not null)
+                {
+                    var channelUsers = GetUsersInVoiceChannel(eventArgs.CurrentChannel.Id);
+                    result = channelUsers.TryGetValue(eventArgs.User.Id, out _);
+                }
+
+                if (eventArgs.PreviousChannel is not null)
+                {
+                    var channelUsers = GetUsersInVoiceChannel(eventArgs.PreviousChannel.Id);
+                    result = result || channelUsers.TryGetValue(eventArgs.User.Id, out _);
+                }
+
+                return result;
+            }
 
             ConcurrentDictionary<ulong, UserVoiceActivity> GetUsersInVoiceChannel(ulong voiceChannelId)
             {
@@ -69,6 +112,17 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserActivity
                     // finish last person activity in channel
                     _userActivitiesToCollect.Enqueue(UpdateActivity(usersInChannel.Values.First()));
                     _usersActivity.TryRemove(previousChannelId, out _);
+                }
+            }
+
+            void ProcessMutedUser()
+            {
+                var currentChannelId = eventArgs.CurrentChannel!.Id;
+                var usersInChannel = GetUsersInVoiceChannel(currentChannelId);
+
+                if (usersInChannel.TryRemove(eventArgs.User.Id, out var activity) && usersInChannel.Count > 1)
+                {
+                    _userActivitiesToCollect.Enqueue(UpdateActivity(activity));
                 }
             }
 

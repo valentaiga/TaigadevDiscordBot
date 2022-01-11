@@ -61,17 +61,33 @@ namespace TaigadevDiscordBot.App.Database.Redis
             return Database.HashSetAsync(AdjustProjectPrefix(outerKey), innerKey, SerializeValue(value));
         }
 
-        public Task AddToHashAsync<T>(string cacheKey, IEnumerable<T> values)
+        public Task SetAddAsync<T>(string cacheKey, T value)
+        {
+            return Database.SetAddAsync(cacheKey, SerializeValue(value));
+        }
+
+        public Task<bool> SetContainsAsync<T>(string cacheKey, T value)
+        {
+            return Database.SetContainsAsync(cacheKey, SerializeValue(value));
+        }
+
+        public Task SetAddAsync<T>(string cacheKey, IEnumerable<T> values)
         {
             var redisValues = values.Select(x => new RedisValue(SerializeValue(x))).ToArray();
             return Database.SetAddAsync(cacheKey, redisValues);
+        }
+
+        public async Task<IEnumerable<T>> SetGetAllAsync<T>(string cacheKey)
+        {
+            var result = await Database.SetMembersAsync(cacheKey);
+            return result is null ? Enumerable.Empty<T>() : result.Select(x => DeserializeValue<T>(x));
         }
 
         public async Task<IList<T>> PopSetAsync<T>(string cacheKey)
         {
             var result = new List<T>();
             RedisValue value;
-            
+
             while ((value = await Database.SetPopAsync(cacheKey)).HasValue)
             {
                 result.Add(DeserializeValue<T>(value));
