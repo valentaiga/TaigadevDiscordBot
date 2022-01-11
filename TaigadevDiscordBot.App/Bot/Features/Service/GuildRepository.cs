@@ -27,6 +27,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.Service
         {
             var guild = await GetGuildAsync(guildId);
             await updateAction(guild);
+            await _redisRepository.SaveAsync(guild);
         }
     }
 }
