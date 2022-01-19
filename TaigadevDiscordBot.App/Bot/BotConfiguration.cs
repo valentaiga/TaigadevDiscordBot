@@ -13,7 +13,7 @@ namespace TaigadevDiscordBot.App.Bot
         public BotConfiguration(IConfiguration configuration)
         {
             AdminId = configuration[ConfigurationKeys.Discord.AdminId];
-            Token = Environment.GetEnvironmentVariable(ConfigurationKeys.Discord.Token);
+            Token = configuration[ConfigurationKeys.Discord.Token] ?? Environment.GetEnvironmentVariable(ConfigurationKeys.Discord.Token);
             Prefix = configuration[ConfigurationKeys.Discord.Prefix];
             ServiceCategoryName = configuration[ConfigurationKeys.Discord.ServiceCategoryName];
             WorkOnServerIds = configuration.GetSection(ConfigurationKeys.Discord.WorkServerIds).Get<List<ulong>>();

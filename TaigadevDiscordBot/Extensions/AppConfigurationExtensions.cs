@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 using Discord.WebSocket;
 
@@ -104,9 +105,7 @@ namespace TaigadevDiscordBot.Extensions
             => new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json")
-#if DEBUG
-                .AddJsonFile("appsettings.Development.json")
-#endif
+                .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", true)
                 .AddEnvironmentVariables()
                 .Build();
 
