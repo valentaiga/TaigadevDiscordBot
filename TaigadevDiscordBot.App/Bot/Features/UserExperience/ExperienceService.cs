@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 
 using TaigadevDiscordBot.Core.Bot.Features.Service;
 using TaigadevDiscordBot.Core.Bot.Features.UserExperience;
+using TaigadevDiscordBot.Core.Constants;
 
 namespace TaigadevDiscordBot.App.Bot.Features.UserExperience
 {
@@ -24,9 +25,11 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserExperience
                 return 0;
             }
 
-            #if DEBUG
-            return 100;
-            #endif
+            if (LocalEnvironment.IsDevelopmentEnvironment)
+            {
+                return 100;
+            }
+
             const int expPerMinute = 6;
             return (ulong)voiceTime.Minutes * expPerMinute;
         }
@@ -38,9 +41,12 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserExperience
                 return 0;
             }
 
-            #if DEBUG
+
+            if (LocalEnvironment.IsDevelopmentEnvironment)
+            {
                 return 100;
-            #endif
+            }
+
             const int minExp = 15;
             const int maxExp = 25;
             return (ulong)(_random.Next(minExp, maxExp));

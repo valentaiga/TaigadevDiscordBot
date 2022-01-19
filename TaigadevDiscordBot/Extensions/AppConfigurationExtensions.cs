@@ -29,6 +29,7 @@ using TaigadevDiscordBot.Core.Bot.Features.Commands;
 using TaigadevDiscordBot.Core.Bot.Features.Service;
 using TaigadevDiscordBot.Core.Bot.Features.UserActivity;
 using TaigadevDiscordBot.Core.Bot.Features.UserExperience;
+using TaigadevDiscordBot.Core.Constants;
 using TaigadevDiscordBot.Core.Database.Redis;
 using TaigadevDiscordBot.Core.Initialization;
 
@@ -105,7 +106,7 @@ namespace TaigadevDiscordBot.Extensions
             => new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json")
-                .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", true)
+                .AddJsonFile($"appsettings.{LocalEnvironment.EnvironmentName}.json", true)
                 .AddEnvironmentVariables()
                 .Build();
 
