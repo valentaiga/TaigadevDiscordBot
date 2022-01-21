@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 
 using TaigadevDiscordBot.Core.Bot.Features;
 using TaigadevDiscordBot.Core.Bot.Features.UserExperience;
+using TaigadevDiscordBot.Core.Constants;
 
 namespace TaigadevDiscordBot.App.Bot.Features.UserExperience
 {
@@ -80,7 +81,11 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserExperience
 
                 var guild = _client.GetGuild(guildId);
                 var dsUser = guild.GetUser(userId);
-                user.Level++;
+
+                while (IsRoleUpdateAvailable(user.Experience, user.Level))
+                {
+                    user.Level++;
+                }
 
                 await UpdateRolesAsync(guild, user);
 
@@ -153,20 +158,21 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserExperience
                 .Except(new[] { nextLevelRole.Id })
                 .ToImmutableArray();
 
-#if DEBUG
-            _logger.LogDebug($"User '{dsUser.Nickname ?? dsUser.Username}' role '{nextLevelRole.Name}' added. (just log, nothing happen)");
-            if (removeLevelRoles.Length > 0)
+            if (LocalEnvironment.IsDevelopmentEnvironment)
             {
-                _logger.LogDebug($"User '{dsUser.Nickname ?? dsUser.Username}' roles removed: ['{string.Join(", ", removeLevelRoles)}'] removed. (just log, nothing happen)");
+                _logger.LogDebug($"User '{dsUser.Nickname ?? dsUser.Username}' role '{nextLevelRole.Name}' added. (just log, nothing happen)");
+                if (removeLevelRoles.Length > 0)
+                {
+                    _logger.LogDebug($"User '{dsUser.Nickname ?? dsUser.Username}' roles removed: ['{string.Join(", ", removeLevelRoles)}'] removed. (just log, nothing happen)");
+                }
             }
-#else
+
             await dsUser.AddRoleAsync(nextLevelRole.Id);
             if (removeLevelRoles.Length > 0)
             {
                 await dsUser.RemoveRolesAsync(removeLevelRoles);
             }
             _logger.LogInformation($"User '{dsUser.Nickname ?? dsUser.Username}' roles updated: [{string.Join(", ", removeLevelRoles)}] removed, {nextLevelRole.Name} added");
-#endif
         }
     }
 }
