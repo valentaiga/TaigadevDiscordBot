@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using TaigadevDiscordBot.Core.Bot;
 using TaigadevDiscordBot.Core.Bot.Event;
 using TaigadevDiscordBot.Core.Bot.Features.Service;
+using TaigadevDiscordBot.Core.Bot.Features.UserExperience;
 using TaigadevDiscordBot.Core.Initialization;
 
 namespace TaigadevDiscordBot.App.Bot
@@ -37,9 +38,11 @@ namespace TaigadevDiscordBot.App.Bot
             _initializationModules = initializationModules;
             _logger = logger;
             // todo: store user roles too and give them back as he re-joins the server
-            // todo: set initial role to newly joined users
             // events
             _botClient.UserVoiceStateUpdated += eventHandler.OnUserVoiceStateUpdated;
+            _botClient.RoleCreated += eventHandler.OnRoleAddOrRemove;
+            _botClient.RoleDeleted += eventHandler.OnRoleAddOrRemove;
+            _botClient.RoleUpdated += eventHandler.OnRoleUpdated;
             _botClient.MessageReceived += eventHandler.OnMessageReceived;
             _botClient.ReactionAdded += eventHandler.OnReactionAdded;
             _botClient.UserJoined += eventHandler.OnUserJoined;

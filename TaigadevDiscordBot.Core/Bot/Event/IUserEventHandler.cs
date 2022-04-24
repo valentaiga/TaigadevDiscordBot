@@ -11,5 +11,7 @@ namespace TaigadevDiscordBot.Core.Bot.Event
         Task OnMessageReceived(SocketMessage message);
         Task OnReactionAdded(Cacheable<IUserMessage, ulong> cachedMessage, Cacheable<IMessageChannel, ulong> cachedTextChannel, SocketReaction reaction);
         Task OnUserJoined(SocketGuildUser dsUser);
+        Task OnRoleAddOrRemove(SocketRole dsRole);
+        Task OnRoleUpdated(SocketRole oldDsRole, SocketRole newDsRole);
     }
 }

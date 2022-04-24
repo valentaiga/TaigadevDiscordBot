@@ -25,7 +25,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserExperience
                 return 0;
             }
 
-            if (LocalEnvironment.IsDevelopmentEnvironment)
+            if (Env.IsDevelopmentEnvironment)
             {
                 return 100;
             }
@@ -42,7 +42,7 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserExperience
             }
 
 
-            if (LocalEnvironment.IsDevelopmentEnvironment)
+            if (Env.IsDevelopmentEnvironment)
             {
                 return 100;
             }

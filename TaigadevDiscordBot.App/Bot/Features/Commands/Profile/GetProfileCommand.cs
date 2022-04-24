@@ -38,10 +38,15 @@ namespace TaigadevDiscordBot.App.Bot.Features.Commands.Profile
 
         public override async Task ExecuteAsync(SocketMessage message, IGuild dsGuild)
         {
-            var dsUser = message.MentionedUsers.Count == 1
-                ? message.MentionedUsers.First() as SocketGuildUser
-                : message.Author as SocketGuildUser;
-            var user = await _userRepository.GetOrCreateUserAsync(dsUser!.Id, dsGuild.Id);
+            var dsUserId = message.MentionedUsers.Count == 1
+                ? (ulong?)message.MentionedUsers.First().Id
+                : null;
+            if (!dsUserId.HasValue)
+                await message.CommandMessageReplyAsync($"Wrong command usage. Example: '{UsageExample}'");
+
+            var dsUser = await dsGuild.GetUserAsync(dsUserId!.Value);
+            
+            var user = await _userRepository.GetOrCreateUserAsync(dsUser.Id, dsGuild.Id);
             var clownsCount = await _emojiCounterService.GetCurrentUserCount(dsUser.Id, dsGuild.Id, Emojis.ClownEmote);
             var cookiesCount = await _emojiCounterService.GetCurrentUserCount(dsUser.Id, dsGuild.Id, Emojis.CookieEmote);
 

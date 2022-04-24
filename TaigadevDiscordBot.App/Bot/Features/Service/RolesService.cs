@@ -14,12 +14,18 @@ namespace TaigadevDiscordBot.App.Bot.Features.Service
     {
         private readonly IUserRepository _userRepository;
         private readonly IGuildRepository _guildRepository;
+        private readonly IRolesRepository _rolesRepository;
         private readonly ILogger<RolesService> _logger;
 
-        public RolesService(IUserRepository userRepository, IGuildRepository guildRepository, ILogger<RolesService> logger)
+        public RolesService(
+            IUserRepository userRepository, 
+            IGuildRepository guildRepository,
+            IRolesRepository rolesRepository,
+            ILogger<RolesService> logger)
         {
             _userRepository = userRepository;
             _guildRepository = guildRepository;
+            _rolesRepository = rolesRepository;
             _logger = logger;
         }
 

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-
+using Discord;
 using Discord.WebSocket;
 
 using Microsoft.Extensions.Configuration;
@@ -58,6 +58,7 @@ namespace TaigadevDiscordBot.Extensions
                 services.AddSingleton<IEmojiCounterService, EmojiCounterService>();
                 services.AddSingleton<IGuildRepository, GuildRepository>();
                 services.AddSingleton<IRolesService, RolesService>();
+                services.AddSingleton<IRolesRepository, RolesRepository>();
                 services.AddSingleton<IAuditLogger, AuditLogger>();
                 services.AddSingleton<IPersonalAuditLogger, PersonalAuditLogger>();
 
@@ -89,6 +90,7 @@ namespace TaigadevDiscordBot.Extensions
                     {
                         AlwaysDownloadUsers = true,
                         MessageCacheSize = 100,
+                        GatewayIntents = GatewayIntents.All
                     };
                     return new DiscordSocketClient(config);
                 });
@@ -106,7 +108,7 @@ namespace TaigadevDiscordBot.Extensions
             => new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json")
-                .AddJsonFile($"appsettings.{LocalEnvironment.EnvironmentName}.json", true)
+                .AddJsonFile($"appsettings.{Env.EnvironmentName}.json", true)
                 .AddEnvironmentVariables()
                 .Build();
 

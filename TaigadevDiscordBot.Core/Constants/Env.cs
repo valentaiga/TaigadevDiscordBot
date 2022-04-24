@@ -2,7 +2,7 @@
 
 namespace TaigadevDiscordBot.Core.Constants
 {
-    public static class LocalEnvironment
+    public static class Env
     {
         public static string EnvironmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 

@@ -9,6 +9,7 @@ using Discord.WebSocket;
 using Microsoft.Extensions.Logging;
 
 using TaigadevDiscordBot.Core.Bot.Features;
+using TaigadevDiscordBot.Core.Bot.Features.Service;
 using TaigadevDiscordBot.Core.Bot.Features.UserExperience;
 using TaigadevDiscordBot.Core.Constants;
 
@@ -21,14 +22,20 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserExperience
         private readonly Regex _roleLevelRegex = new(@"^([0-9][0-9]?\.)|(100\.)");
 
         private readonly IUserRepository _userRepository;
+        private readonly IRolesRepository _rolesRepository;
         private readonly DiscordSocketClient _client;
         private readonly ILogger<UserLevelService> _logger;
 
         private const int MaxLevel = 300;
 
-        public UserLevelService(IUserRepository userRepository, DiscordSocketClient client, ILogger<UserLevelService> logger)
+        public UserLevelService(
+            IUserRepository userRepository,
+            IRolesRepository rolesRepository,
+            DiscordSocketClient client, 
+            ILogger<UserLevelService> logger)
         {
             _userRepository = userRepository;
+            _rolesRepository = rolesRepository;
             _client = client;
             _logger = logger;
 
@@ -73,14 +80,14 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserExperience
                 }
                 
                 // migration from jupiter bot activity
-                TryMigrateUserLevel(user, userId, guildId);
+                await TryMigrateUserLevel(user, userId, guildId);
 
                 // uncomment if experience should be removed after level-up
                 //var requiredExperience = _levels[user.Level++];
                 //user.Experience = user.Experience < requiredExperience ? 0 : user.Experience - requiredExperience;
 
-                var guild = _client.GetGuild(guildId);
-                var dsUser = guild.GetUser(userId);
+                var guild = _client.GetGuild(guildId) as IGuild;
+                var dsUser = await guild.GetUserAsync(userId);
 
                 while (IsRoleUpdateAvailable(user.Experience, user.Level))
                 {
@@ -93,30 +100,26 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserExperience
             });
         }
 
-        private void TryMigrateUserLevel(User user, ulong userId, ulong guildId)
+        private async Task TryMigrateUserLevel(User user, ulong userId, ulong guildId)
         {
             if (user.LevelMigrationNotNeeded)
             {
                 return;
             }
 
-            var guild = _client.GetGuild(guildId);
-            var dsUser = guild.GetUser(userId);
+            var guild = _client.GetGuild(guildId) as IGuild;
+            var dsUser = await guild.GetUserAsync(userId);
 
-            var (level, role) = dsUser.Roles
-                .Where(x => _roleLevelRegex.IsMatch(x.Name))
-                .Select(x => (int.Parse(x.Name.Split(".")[0]), x))
-                .OrderByDescending(x => x.Item1)
-                .FirstOrDefault();
+            var userRoles = _rolesRepository.GetRoles(guildId, dsUser.RoleIds);
+
+            var levelRoles = userRoles.Where(x => x.IsLevelRole).ToArray();
+            var levelRole = levelRoles.OrderByDescending(x => x.Level).FirstOrDefault();
 
             user.LevelMigrationNotNeeded = true;
-            if (role is null || level == 0 || level == user.Level)
-            {
+            if (levelRole is null || levelRole.Level == 0 || levelRole.Level == user.Level)
                 return;
 
-            }
-
-            user.Level = level;
+            user.Level = levelRole.Level!.Value;
             user.Experience = _levels[user.Level--];
         }
 
@@ -151,28 +154,29 @@ namespace TaigadevDiscordBot.App.Bot.Features.UserExperience
                 return;
             }
 
-            var removeLevelRoles = dsUser.RoleIds
-                .Select(x => guildRoles.Find(gr => gr.Id == x))
-                .Where(x => _roleLevelRegex.IsMatch(x!.Name))
-                .Select(x => x.Id)
-                .Except(new[] { nextLevelRole.Id })
-                .ToImmutableArray();
+            var userRoles = _rolesRepository.GetRoles(guild.Id, dsUser.RoleIds);
 
-            if (LocalEnvironment.IsDevelopmentEnvironment)
+            var removeLevelRoleIds = userRoles
+                .Where(x => x.IsLevelRole && x.Id != nextLevelRole.Id)
+                .Select(x => x.Id)
+                .ToArray();
+
+            if (Env.IsDevelopmentEnvironment)
             {
                 _logger.LogDebug($"User '{dsUser.Nickname ?? dsUser.Username}' role '{nextLevelRole.Name}' added. (just log, nothing happen)");
-                if (removeLevelRoles.Length > 0)
+                if (removeLevelRoleIds.Length > 0)
                 {
-                    _logger.LogDebug($"User '{dsUser.Nickname ?? dsUser.Username}' roles removed: ['{string.Join(", ", removeLevelRoles)}'] removed. (just log, nothing happen)");
+                    _logger.LogDebug($"User '{dsUser.Nickname ?? dsUser.Username}' roles removed: ['{string.Join(", ", removeLevelRoleIds)}'] removed. (just log, nothing happen)");
                 }
+                return;
             }
 
             await dsUser.AddRoleAsync(nextLevelRole.Id);
-            if (removeLevelRoles.Length > 0)
+            if (removeLevelRoleIds.Length > 0)
             {
-                await dsUser.RemoveRolesAsync(removeLevelRoles);
+                await dsUser.RemoveRolesAsync(removeLevelRoleIds);
             }
-            _logger.LogInformation($"User '{dsUser.Nickname ?? dsUser.Username}' roles updated: [{string.Join(", ", removeLevelRoles)}] removed, {nextLevelRole.Name} added");
+            _logger.LogInformation($"User '{dsUser.Nickname ?? dsUser.Username}' roles updated: [{string.Join(", ", removeLevelRoleIds)}] removed, {nextLevelRole.Name} added");
         }
     }
 }

@@ -17,6 +17,7 @@ namespace TaigadevDiscordBot.App.Bot
 {
     public class UserEventHandler : IUserEventHandler
     {
+        private readonly IRolesRepository _rolesRepository;
         private readonly IAuditLogger _auditLogger;
         private readonly ILogger<UserEventHandler> _logger;
 
@@ -31,9 +32,11 @@ namespace TaigadevDiscordBot.App.Bot
             IEmojiCounterService emojiCounterService,
             ICommandService commandService,
             IRolesService rolesService,
+            IRolesRepository rolesRepository,
             IAuditLogger auditLogger,
             ILogger<UserEventHandler> logger)
         {
+            _rolesRepository = rolesRepository;
             _auditLogger = auditLogger;
             _logger = logger;
             VoiceStatusUpdatedHandler += voiceActivityService.UpdateUserVoiceActivityAsync;
@@ -76,7 +79,7 @@ namespace TaigadevDiscordBot.App.Bot
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError($"Error during message processing: {ex}");
+                    _logger.LogError($"Error during message '{message.Content}' processing: {ex}");
                     await _auditLogger.LogErrorAsync(ex, textChannel.Guild.Id);
                 }
             }
@@ -114,6 +117,19 @@ namespace TaigadevDiscordBot.App.Bot
                 _logger.LogError($"Error during message processing: {ex}");
                 await _auditLogger.LogErrorAsync(ex, dsUser.Guild.Id);
             }
+        }
+
+        public Task OnRoleAddOrRemove(SocketRole dsRole)
+        {
+            _rolesRepository.RemoveCachedRoles(dsRole.Guild.Id);
+            return Task.CompletedTask;
+        }
+
+        public Task OnRoleUpdated(SocketRole oldDsRole, SocketRole newDsRole)
+        {
+            var guildId = newDsRole?.Guild.Id ?? oldDsRole.Guild.Id;
+            _rolesRepository.RemoveCachedRoles(guildId);
+            return Task.CompletedTask;
         }
     }
 }
